@@ -1,0 +1,6 @@
+@LibraryProject_HostAddress = http://localhost:5118
+
+GET {{LibraryProject_HostAddress}}/Lib/
+Accept: application/json
+
+###
