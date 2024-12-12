@@ -26,6 +26,7 @@ namespace LibraryProject.Applications
         public DbSet<User> Users { get; set; }
         public DbSet<Status> Statuses { get; set; }
         public DbSet<BookPurchaseOrder> Orders { get; set; }
+        public DbSet<BookLoan> BookLoans { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Настройка книг
