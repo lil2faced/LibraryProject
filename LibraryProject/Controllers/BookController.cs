@@ -23,7 +23,7 @@ namespace LibraryProject.Controllers
             return Ok(await bookService.GetAllBooksAsync());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetAsync(int id)
+        public async Task<ActionResult<Book>> GetAsync(int? id)
         {
             var res = await bookService.ReturnBookByIdAsync(id);
             if (res.Item1 == 0)
@@ -32,7 +32,7 @@ namespace LibraryProject.Controllers
                 return NotFound("Книга не найдена");
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] BookWithoutExternal bookNo, int GenreId, int CategoryId, int AuthorId, int SeriesID)
+        public async Task<ActionResult> PostAsync([FromBody] BookWithoutExternal bookNo, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID)
         {
             switch (await bookService.AddBookAsync(GenreId, CategoryId, AuthorId, SeriesID, bookNo))
             {
@@ -47,7 +47,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
             switch (await bookService.DeleteByIdAsync(id))
             {
@@ -60,7 +60,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] BookWithoutExternal book, int GenreId, int CategoryId, int AuthorId, int SeriesID)
+        public async Task<IActionResult> Update(int? id, [FromBody] BookWithoutExternal book, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID)
         {
             var result = await bookService.UpdateByIDAsync(id, GenreId, CategoryId, AuthorId, SeriesID, book);
             if (result == 1)

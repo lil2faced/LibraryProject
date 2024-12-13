@@ -16,14 +16,13 @@ namespace LibraryProject.Controllers
         {
             this.orderService = orderService;
         }
-
         [HttpGet]
         public async Task<ActionResult<List<BookPurchaseOrder>>> Get()
         {
             return Ok(await orderService.Get());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookPurchaseOrder>> Get(int id)
+        public async Task<ActionResult<BookPurchaseOrder>> Get(int? id)
         {
             var res = await orderService.GetById(id);
             if (res.Item1 == 0)
@@ -32,7 +31,7 @@ namespace LibraryProject.Controllers
                 return NotFound("Заказ не найден");
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int BookId, int UserId, int StatusId)
+        public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? BookId, int? UserId, int? StatusId)
         {
             switch (await orderService.Add(bookPurchaseOrderWithoutExternal, StatusId, UserId, BookId))
             {
@@ -42,7 +41,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int? id)
         {
             switch (await orderService.Delete(id))
             {
@@ -52,7 +51,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("id")]
-        public async Task<ActionResult> Update(int id, BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int statusId, int UserId, int BookId)
+        public async Task<ActionResult> Update(int id, BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? statusId, int? UserId, int? BookId)
         {
             switch (await orderService.Update(bookPurchaseOrderWithoutExternal, statusId, UserId, BookId, id))
             {

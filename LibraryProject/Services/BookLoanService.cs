@@ -13,8 +13,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> Add(BookLoanWithoutExternal bookLoanWithoutExternal, int UserId, int BookId)
+        public async Task<int> Add(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId)
         {
+            if (bookLoanWithoutExternal == null || UserId == null || BookId == null)
+            {
+                throw new ArgumentNullException();
+            }
             var book = await databaseContext.Books.FindAsync(BookId);
             var user = await databaseContext.Users.FindAsync(UserId);
             if (book == null || user == null)
@@ -34,8 +38,12 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<(int, BookLoan?)> GetById(int id)
+        public async Task<(int, BookLoan?)> GetById(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var temp = await databaseContext.BookLoans
                 .Include(b => b.User)
                 .Where(b => b.Id == id)
@@ -52,8 +60,12 @@ namespace LibraryProject.Services
                 .Include(b => b.User)
                 .ToListAsync();
         }
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var loan = await databaseContext.BookLoans.FindAsync(id);
             if (loan == null)
             {
@@ -63,8 +75,12 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> Update(BookLoanWithoutExternal bookLoanWithoutExternal, int UserId, int BookId, int id)
+        public async Task<int> Update(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, int? id)
         {
+            if (UserId == null || BookId == null || id == null || bookLoanWithoutExternal == null)
+            {
+                throw new ArgumentNullException();
+            }
             var temp = await databaseContext.BookLoans.FindAsync(id);
             if (temp == null) return 1;
 

@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<(int, User?)> Get(int id)
+        public async Task<(int, User?)> Get(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var user = await databaseContext.Users.FindAsync(id);
             if (user == null)
             {
@@ -28,6 +32,10 @@ namespace LibraryProject.Services
         }
         public async Task<int> Add(UserWithoutExternal user)
         {
+            if (user == null)
+            {
+                throw new ArgumentNullException();
+            }
             var us = await databaseContext.Users.Where(u => u.PhoneNumber == user.PhoneNumber).FirstOrDefaultAsync();
             if (us != null)
             {
@@ -44,8 +52,12 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> DeleteById(int id)
+        public async Task<int> DeleteById(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var user = await databaseContext.Users.FindAsync(id);
             if (user == null)
             {
@@ -55,8 +67,9 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         } 
-        public async Task<int> Update(int id, User user)
+        public async Task<int> Update(int? id, User user)
         {
+            if (user == null || id == null) throw new ArgumentNullException();
             var u = await databaseContext.Users.FindAsync(id);
             if (user == null || u == null)
             {

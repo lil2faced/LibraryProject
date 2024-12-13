@@ -21,7 +21,7 @@ namespace LibraryProject.Controllers
             return Ok(await reviewService.GetAllReviews());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Review>> Get(int id)
+        public async Task<ActionResult<Review>> Get(int? id)
         {
             var res = await reviewService.GetReviewById(id);
             if (res == null)
@@ -31,7 +31,7 @@ namespace LibraryProject.Controllers
             return Ok(res);
         }
         [HttpPost]
-        public async Task<ActionResult<int>> Add(int bookId, [FromBody]ReviewWithoutExternal reviewWithoutExternal)
+        public async Task<ActionResult<int>> Add(int? bookId, [FromBody]ReviewWithoutExternal reviewWithoutExternal)
         {
             int res = await reviewService.AddAsync(bookId, reviewWithoutExternal);
             if (res == 1)
@@ -41,7 +41,7 @@ namespace LibraryProject.Controllers
             return Ok("Создание успешно");
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int? id)
         {
             var res = await reviewService.DeleteReviewById(id);
             if (res == 1)
@@ -51,7 +51,7 @@ namespace LibraryProject.Controllers
             return Ok("Отзыв удалён");
         }
         [HttpPut]
-        public async Task<ActionResult> Update(int id, [FromBody] ReviewWithoutExternal reviewWithoutExternal)
+        public async Task<ActionResult> Update(int? id, [FromBody] ReviewWithoutExternal reviewWithoutExternal)
         {
             var res = await reviewService.UpdateReview(id, reviewWithoutExternal);
             if (res == 1)

@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int StatusId, int UserId, int BookId)
+        public async Task<int> Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId)
         {
+            if (bookPurchaseOrder == null || StatusId == null || UserId == null || BookId == null)
+            {
+                throw new ArgumentNullException();
+            }
             var status = await databaseContext.Statuses.FindAsync(StatusId);
             var book = await databaseContext.Books.FindAsync(BookId);
             var user = await databaseContext.Users.FindAsync(UserId);
@@ -36,8 +40,12 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<(int, BookPurchaseOrder?)> GetById(int id)
+        public async Task<(int, BookPurchaseOrder?)> GetById(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var temp = await databaseContext.Orders
                 .Include(b=> b.Status)
                 .Include(b=> b.User)
@@ -56,8 +64,12 @@ namespace LibraryProject.Services
                 .Include(b => b.User)
                 .ToListAsync();
         }
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var order = await databaseContext.Orders.FindAsync(id);
             if (order == null)
             {
@@ -67,8 +79,12 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int StatusId, int UserId, int BookId, int id)
+        public async Task<int> Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id)
         {
+            if (StatusId == null || bookPurchaseOrder == null || UserId == null || BookId == null || id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var temp = await databaseContext.Orders.FindAsync(id);
             if (temp == null) return 1;
 

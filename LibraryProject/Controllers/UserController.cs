@@ -22,7 +22,7 @@ namespace LibraryProject.Controllers
             return Ok(await userService.GetAll());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<User?>> GetById(int id)
+        public async Task<ActionResult<User?>> GetById(int? id)
         {
             var res = await userService.Get(id);
             if (res.Item1 == 1)
@@ -32,7 +32,7 @@ namespace LibraryProject.Controllers
             return Ok(res.Item2);
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int? id)
         {
             int res = await userService.DeleteById(id);
             if (res == 0)
@@ -52,7 +52,7 @@ namespace LibraryProject.Controllers
             return Ok("Пользователь создан");
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, [FromBody] User user)
+        public async Task<ActionResult> Update(int? id, [FromBody] User user)
         {
             int res = await userService.Update(id, user);
             if (res == 1)

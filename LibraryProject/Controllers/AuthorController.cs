@@ -23,7 +23,7 @@ namespace LibraryProject.Controllers
             return Ok(await service.GetAllAuthorsAsync());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookAuthor>> GetAsync(int id)
+        public async Task<ActionResult<BookAuthor>> GetAsync(int? id)
         {
             var res = await service.GetAuthorByIdAsync(id);
             if (res.Item1 == 0)
@@ -32,7 +32,7 @@ namespace LibraryProject.Controllers
                 return NotFound("Автор не найден");
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] BookAuthor author)
+        public async Task<ActionResult> PostAsync([FromBody] BookAuthor? author)
         {
             switch (await service.AddAuthorAsync(author))
             {
@@ -45,7 +45,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
             switch (await service.DeleteByIdAsync(id))
             {
@@ -58,7 +58,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]BookAuthor bookAuthor)
+        public async Task<IActionResult> Update(int? id, [FromBody]BookAuthor bookAuthor)
         {
             var result = await service.UpdateByIDAsync(id, bookAuthor);
             if (result == 1)

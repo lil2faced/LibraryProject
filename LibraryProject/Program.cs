@@ -39,8 +39,7 @@ namespace LibraryProject
             builder.Services.AddTransient<StatusService>();
             builder.Services.AddScoped<IUserService, UserDatabaseSevice>();
             builder.Services.AddTransient<UserDatabaseSevice>();
-
-
+    
             builder.Services.AddAutoMapper(typeof(Program));
             var app = builder.Build();
 

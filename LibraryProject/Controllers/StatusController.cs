@@ -22,7 +22,7 @@ namespace LibraryProject.Controllers
             return Ok(await statusService.GetAll());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Status>> Get(int id)
+        public async Task<ActionResult<Status>> Get(int? id)
         {
             var res = await statusService.GetById(id);
             if (res.Item1 == 1)
@@ -42,7 +42,7 @@ namespace LibraryProject.Controllers
             return Ok("Статус создан");
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int? id)
         {
             int res = await statusService.Delete(id);
             if (res == 0)
@@ -52,7 +52,7 @@ namespace LibraryProject.Controllers
             return NotFound("Статус не найден");
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, [FromBody] Status status)
+        public async Task<ActionResult> Update(int? id, [FromBody] Status status)
         {
             int res = await statusService.Update(id, status);
             if (res == 1)

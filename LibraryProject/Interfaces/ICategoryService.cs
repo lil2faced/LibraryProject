@@ -6,9 +6,9 @@ namespace LibraryProject.Interfaces
     {
         Task<int> AddAsync(Category category);
         Task<List<Category>> GetAllAsync();
-        Task<(int, Category?)> GetByIdAsync(int id);
-        Task<int> DeleteByIdAsync(int id);
-        Task<int> UpdateByIDAsync(int id, Category cat);
+        Task<(int, Category?)> GetByIdAsync(int? id);
+        Task<int> DeleteByIdAsync(int? id);
+        Task<int> UpdateByIDAsync(int? id, Category cat);
 
     }
 }

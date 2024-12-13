@@ -14,6 +14,10 @@ namespace LibraryProject.Services
         }
         public async Task<int> AddAsync(Genre genre)
         {
+            if (genre == null)
+            {
+                throw new ArgumentNullException();
+            }
             var genre1 = await _db.Genres.Where(a => a.Name == genre.Name).FirstOrDefaultAsync();
             if (genre1 != null)
             {
@@ -27,8 +31,12 @@ namespace LibraryProject.Services
         {
             return await _db.Genres.ToListAsync();
         }
-        public async Task<(int, Genre?)> GetByIdAsync(int id)
+        public async Task<(int, Genre?)> GetByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
             {
@@ -36,8 +44,12 @@ namespace LibraryProject.Services
             }
             return (0, genre);
         }
-        public async Task<int> DeleteByIdAsync(int id)
+        public async Task<int> DeleteByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
             {
@@ -47,8 +59,12 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> UpdateByIDAsync(int id, Genre gen)
+        public async Task<int> UpdateByIDAsync(int? id, Genre gen)
         {
+            if (id == null || gen == null)
+            {
+                throw new ArgumentNullException();
+            }
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
             {

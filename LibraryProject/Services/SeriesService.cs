@@ -14,6 +14,10 @@ namespace LibraryProject.Services
         }
         public async Task<int> AddAsync(Series series)
         {
+            if (series == null)
+            {
+                throw new ArgumentNullException();
+            }
             var series1 = await _db.BookSeries.Where(a => a.Name == series.Name).FirstOrDefaultAsync();
             if (series1 != null)
             {
@@ -27,8 +31,12 @@ namespace LibraryProject.Services
         {
             return await _db.BookSeries.ToListAsync();
         }
-        public async Task<(int, Series?)> GetByIdAsync(int id)
+        public async Task<(int, Series?)> GetByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var series = await _db.BookSeries.FindAsync(id);
             if (series == null)
             {
@@ -36,8 +44,9 @@ namespace LibraryProject.Services
             }
             return (0, series);
         }
-        public async Task<int> DeleteByIdAsync(int id)
+        public async Task<int> DeleteByIdAsync(int? id)
         {
+            if(id == null) throw new ArgumentNullException();
             var series = await _db.BookSeries.FindAsync(id);
             if (series == null)
             {
@@ -47,8 +56,9 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> UpdateByIDAsync(int id, Series ser)
+        public async Task<int> UpdateByIDAsync(int? id, Series ser)
         {
+            if (id == null || ser == null) throw new ArgumentNullException();
             var series = await _db.BookSeries.FindAsync(id);
             if (series == null)
             {

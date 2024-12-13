@@ -6,8 +6,8 @@ namespace LibraryProject.Interfaces
     {
         Task<int> Add(Status status);
         Task<List<Status>> GetAll();
-        Task<(int, Status?)> GetById(int id);
-        Task<int> Update(int id, Status status);
-        Task<int> Delete(int id);
+        Task<(int, Status?)> GetById(int? id);
+        Task<int> Update(int? id, Status status);
+        Task<int> Delete(int? id);
     }
 }

@@ -14,6 +14,10 @@ namespace LibraryProject.Services
         }
         public async Task<int> AddAsync(Category category)
         {
+            if (category == null)
+            {
+                throw new ArgumentNullException();
+            }
             var category1 = await _db.Categories.Where(a => a.Name == category.Name).FirstOrDefaultAsync();
             if (category1 != null)
             {
@@ -27,8 +31,12 @@ namespace LibraryProject.Services
         {
             return await _db.Categories.ToListAsync();
         }
-        public async Task<(int, Category?)> GetByIdAsync(int id)
+        public async Task<(int, Category?)> GetByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
             {
@@ -36,8 +44,12 @@ namespace LibraryProject.Services
             }
             return (0, category);
         }
-        public async Task<int> DeleteByIdAsync(int id)
+        public async Task<int> DeleteByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
             {
@@ -47,8 +59,12 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> UpdateByIDAsync(int id, Category cat)
+        public async Task<int> UpdateByIDAsync(int? id, Category cat)
         {
+            if (id == null || cat == null)
+            {
+                throw new ArgumentNullException();
+            }
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
             {

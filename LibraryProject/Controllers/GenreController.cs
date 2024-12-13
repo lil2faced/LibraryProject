@@ -22,7 +22,7 @@ namespace LibraryProject.Controllers
             return Ok(await genreService.GetAllAsync());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre?>> Get(int id)
+        public async Task<ActionResult<Genre?>> Get(int? id)
         {
             var gen = await genreService.GetByIdAsync(id);
             if (gen.Item1 == 0)
@@ -44,7 +44,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
             switch (await genreService.DeleteByIdAsync(id))
             {
@@ -57,7 +57,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Genre genre)
+        public async Task<IActionResult> Update(int? id, [FromBody] Genre genre)
         {
             var result = await genreService.UpdateByIDAsync(id, genre);
             if (result == 1)

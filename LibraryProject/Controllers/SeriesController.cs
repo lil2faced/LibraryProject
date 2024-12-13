@@ -21,7 +21,7 @@ namespace LibraryProject.Controllers
             return Ok(await seriesService.GetAllAsync());
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Series?>> Get(int id)
+        public async Task<ActionResult<Series?>> Get(int? id)
         {
             var ser = await seriesService.GetByIdAsync(id);
             if (ser.Item1 == 0)
@@ -43,7 +43,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
             switch (await seriesService.DeleteByIdAsync(id))
             {
@@ -56,7 +56,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Series series)
+        public async Task<IActionResult> Update(int? id, [FromBody] Series series)
         {
             var result = await seriesService.UpdateByIDAsync(id, series);
             if (result == 1)

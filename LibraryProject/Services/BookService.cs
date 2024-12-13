@@ -14,8 +14,12 @@ namespace LibraryProject.Services
         {
             _db = databaseContext;
         }
-        public async Task<int> AddBookAsync(int GenreId, int CategoryId, int AuthorId, int SeriesId, BookWithoutExternal WithoutExternalBook)
+        public async Task<int> AddBookAsync(int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook)
         {
+            if (GenreId == null || CategoryId == null || AuthorId == null || SeriesId == null || WithoutExternalBook == null)
+            {
+                throw new ArgumentNullException();
+            }
             var genre = await _db.Genres.FindAsync(GenreId);
             var category = await _db.Categories.FindAsync(CategoryId);
             var author = await _db.BookAuthors.FindAsync(AuthorId);
@@ -37,10 +41,10 @@ namespace LibraryProject.Services
                 Name = WithoutExternalBook.Name,
                 Genre = genre,
                 Category = category,
-                GenreId = GenreId,
-                CategoryId = CategoryId,
-                AuthorId = AuthorId,
-                SeriesId = SeriesId,
+                GenreId = (int)GenreId,
+                CategoryId = (int)CategoryId,
+                AuthorId = (int)AuthorId,
+                SeriesId = (int)SeriesId,
                 PublicationYear = WithoutExternalBook.PublicationYear,
                 Publishing = WithoutExternalBook.Publishing,
                 Price = WithoutExternalBook.Price,
@@ -57,8 +61,12 @@ namespace LibraryProject.Services
         {
             return await _db.Books.Include(b => b.Genre).Include(b => b.Category).Include(b => b.Series).Include(b => b.Author).Include(b => b.Reviews).ToListAsync();
         }
-        public async Task<(int, Book?)> ReturnBookByIdAsync(int id)
+        public async Task<(int, Book?)> ReturnBookByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var book = await _db.Books.Include(b => b.Genre).Include(b => b.Category).Include(b => b.Series).Include(b => b.Author).Include(b => b.Reviews).Where(b => b.Id == id).FirstOrDefaultAsync();
             if (book == null)
             {
@@ -66,8 +74,12 @@ namespace LibraryProject.Services
             }
             return (0, book);
         }
-        public async Task<int> DeleteByIdAsync(int id)
+        public async Task<int> DeleteByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var book1 = await _db.Books.FindAsync(id);
             if (book1 == null)
             {
@@ -77,8 +89,12 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> UpdateByIDAsync(int id, int GenreId, int CategoryId, int AuthorId, int SeriesId, BookWithoutExternal WithoutExternalBook)
+        public async Task<int> UpdateByIDAsync(int? id, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook)
         {
+            if (id == null || GenreId == null || CategoryId == null || AuthorId == null || SeriesId == null || WithoutExternalBook == null)
+            {
+                throw new ArgumentNullException();
+            }
             var book = await _db.Books.FindAsync(id);
             if (book == null) return 1; 
 
@@ -93,10 +109,10 @@ namespace LibraryProject.Services
             book.Name = WithoutExternalBook.Name;
             book.Genre = genre;
             book.Category = category;
-            book.GenreId = GenreId;
-            book.CategoryId = CategoryId;
-            book.AuthorId = AuthorId;
-            book.SeriesId = SeriesId;
+            book.GenreId = (int)GenreId;
+            book.CategoryId = (int)CategoryId;
+            book.AuthorId = (int)AuthorId;
+            book.SeriesId = (int)SeriesId;
             book.PublicationYear = WithoutExternalBook.PublicationYear;
             book.Publishing = WithoutExternalBook.Publishing;
             book.Price = WithoutExternalBook.Price;

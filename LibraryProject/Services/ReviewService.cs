@@ -16,8 +16,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> AddAsync(int BookId, ReviewWithoutExternal reviewWithout)
+        public async Task<int> AddAsync(int? BookId, ReviewWithoutExternal reviewWithout)
         {
+            if (BookId == null || reviewWithout == null)
+            {
+                throw new ArgumentNullException();
+            }
             var book = await databaseContext.Books.FindAsync(BookId);
             if (book == null)
             {
@@ -26,7 +30,7 @@ namespace LibraryProject.Services
 
             Review review = new Review()
             {
-                BookId = BookId,
+                BookId = (int)BookId,
                 BodyReview = reviewWithout.BodyReview,
                 DateReview = reviewWithout.DateReview
             };
@@ -44,13 +48,18 @@ namespace LibraryProject.Services
         {
             return await databaseContext.Reviews.ToListAsync();
         }
-        public async Task<Review?> GetReviewById(int id)
+        public async Task<Review?> GetReviewById(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var review = await databaseContext.Reviews.FindAsync(id);
             return review;
         }
-        public async Task<int> DeleteReviewById(int id)
+        public async Task<int> DeleteReviewById(int? id)
         {
+            if (id == null) throw new ArgumentNullException();
             var review = await databaseContext.Reviews.FindAsync(id);
             if (review == null)
             {
@@ -60,8 +69,9 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> UpdateReview(int id, ReviewWithoutExternal rev)
+        public async Task<int> UpdateReview(int? id, ReviewWithoutExternal rev)
         {
+            if (id == null || rev == null) throw new ArgumentNullException();
             var review = await databaseContext.Reviews.FindAsync(id);
             if (review == null)
             {

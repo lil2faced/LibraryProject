@@ -7,8 +7,8 @@ namespace LibraryProject.Interfaces
     {
         Task<int> AddAuthorAsync(BookAuthor author);
         Task<List<BookAuthor>> GetAllAuthorsAsync();
-        Task<(int, BookAuthor?)> GetAuthorByIdAsync(int id);
-        Task<int> DeleteByIdAsync(int id);
-        Task<int> UpdateByIDAsync(int id, BookAuthor aut);
+        Task<(int, BookAuthor?)> GetAuthorByIdAsync(int? id);
+        Task<int> DeleteByIdAsync(int? id);
+        Task<int> UpdateByIDAsync(int? id, BookAuthor aut);
     }
 }

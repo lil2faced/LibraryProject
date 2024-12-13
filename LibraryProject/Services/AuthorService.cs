@@ -13,8 +13,12 @@ namespace LibraryProject.Services
             _db = databaseContext;
         }
 
-        public async Task<int> AddAuthorAsync(BookAuthor author)
+        public async Task<int> AddAuthorAsync(BookAuthor? author)
         {
+            if (author == null)
+            {
+                throw new ArgumentNullException();
+            }
             var Author = await _db.BookAuthors.Where(a => a.Name == author.Name).FirstOrDefaultAsync();
             if (Author != null)
             {
@@ -30,8 +34,12 @@ namespace LibraryProject.Services
             return await _db.BookAuthors.ToListAsync();
         }
 
-        public async Task<(int, BookAuthor?)> GetAuthorByIdAsync(int id)
+        public async Task<(int, BookAuthor?)> GetAuthorByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var author = await _db.BookAuthors.FindAsync(id);
             if (author == null)
             {
@@ -40,8 +48,12 @@ namespace LibraryProject.Services
             return (0, author);
         }
 
-        public async Task<int> DeleteByIdAsync(int id)
+        public async Task<int> DeleteByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var author = await _db.BookAuthors.FindAsync(id);
             if (author == null)
             {
@@ -52,8 +64,12 @@ namespace LibraryProject.Services
             return 0;
         }
 
-        public async Task<int> UpdateByIDAsync(int id, BookAuthor aut)
+        public async Task<int> UpdateByIDAsync(int? id, BookAuthor aut)
         {
+            if (id == null || aut == null)
+            {
+                throw new ArgumentNullException();
+            }
             var author = await _db.BookAuthors.FindAsync(id);
             if (author == null)
             {

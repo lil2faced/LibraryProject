@@ -14,6 +14,10 @@ namespace LibraryProject.Services
         }
         public async Task<int> Add(Status status)
         {
+            if (status == null)
+            {
+                throw new ArgumentNullException();
+            }
             var temp = await databaseContext.Statuses.Where(s => s.Name == status.Name).FirstOrDefaultAsync();
             if (temp != null)
             {
@@ -27,8 +31,12 @@ namespace LibraryProject.Services
         {
             return await databaseContext.Statuses.ToListAsync();
         }
-        public async Task<(int,Status?)> GetById(int id)
+        public async Task<(int,Status?)> GetById(int? id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
             var status = await databaseContext.Statuses.FindAsync(id);
             if (status == null)
             {
@@ -36,8 +44,9 @@ namespace LibraryProject.Services
             }
             return (0, status);
         }
-        public async Task<int> Update(int id, Status status)
+        public async Task<int> Update(int? id, Status status)
         {
+            if (id == null || status == null) throw new ArgumentNullException();
             var temp = databaseContext.Statuses.Find(id);
             if (temp == null)
             {
@@ -48,9 +57,13 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int? id)
         {
-            var temp = databaseContext.Statuses.Find(id);
+            if (id == null)
+            {
+                throw new ArgumentNullException();
+            }
+                var temp = databaseContext.Statuses.Find(id);
             if (temp == null)
             {
                 return 1;
