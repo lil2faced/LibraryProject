@@ -29,7 +29,7 @@ namespace LibraryProject.Controllers
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
-                return NotFound();
+                return NotFound("Книга не найдена");
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] BookWithoutExternal bookNo, int GenreId, int CategoryId, int AuthorId, int SeriesID)
@@ -52,11 +52,11 @@ namespace LibraryProject.Controllers
             switch (await BookService.DeleteByIdAsync(_db, id))
             {
                 case 0:
-                    return Ok();
+                    return Ok("Книга удалена");
                 case 1:
-                    return BadRequest();
+                    return NotFound("Книга не найдена");
                 default:
-                    return BadRequest();
+                    return BadRequest("Неизвестная ошибка");
             }
         }
         [HttpPut("{id}")]
@@ -66,8 +66,8 @@ namespace LibraryProject.Controllers
             if (result == 1)
                 return NotFound($"Книга с ID {id} не найдена");
             else if (result == 2)
-                return BadRequest("Один из связанных объектов не найден");
-            return Ok();
+                return NotFound("Один из связанных объектов не найден");
+            return Ok("Книга обновлена");
         }
     }
 }

@@ -27,7 +27,7 @@ namespace LibraryProject.Controllers
             if (ser.Item1 == 0)
                 return Ok(ser.Item2);
             else
-                return NotFound();
+                return NotFound("Серия не найдена");
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Series series)
@@ -61,7 +61,7 @@ namespace LibraryProject.Controllers
             var result = await SeriesService.UpdateByIDAsync(_databaseContext, id, series);
             if (result == 1)
                 return NotFound($"Серия с ID {id} не найдена");
-            return Ok();
+            return Ok("Серия обновлена");
         }
     }
 }

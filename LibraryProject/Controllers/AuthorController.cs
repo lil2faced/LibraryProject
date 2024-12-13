@@ -28,7 +28,7 @@ namespace LibraryProject.Controllers
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
-                return NotFound();
+                return NotFound("Автор не найден");
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] BookAuthor author)
@@ -44,16 +44,16 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromBody] int id)
+        public async Task<IActionResult> Delete(int id)
         {
             switch (await AuthorService.DeleteByIdAsync(id, _db))
             {
                 case 0:
-                    return Ok();
+                    return Ok("Автор успешно удалён");
                 case 1:
-                    return BadRequest();
+                    return NotFound("Автор не найден");
                 default:
-                    return BadRequest();
+                    return BadRequest("Неизвестная ошибка");
             }
         }
         [HttpPut("{id}")]
@@ -62,7 +62,7 @@ namespace LibraryProject.Controllers
             var result = await AuthorService.UpdateByIDAsync(_db, id, bookAuthor);
             if (result == 1)
                 return NotFound($"Автор с ID {id} не найден");
-            return Ok();
+            return Ok("Автор обновлён");
         }
     }
 }

@@ -27,7 +27,7 @@ namespace LibraryProject.Controllers
             if (gen.Item1 == 0)
                 return Ok(gen.Item2);
             else
-                return NotFound();
+                return NotFound("Жанр не найден");
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Genre genre)
@@ -61,7 +61,7 @@ namespace LibraryProject.Controllers
             var result = await GenreService.UpdateByIDAsync(_databaseContext, id, genre);
             if (result == 1)
                 return NotFound($"Жанр с ID {id} не найден");
-            return Ok();
+            return Ok("Жанр обновлен");
         }
     }
 }

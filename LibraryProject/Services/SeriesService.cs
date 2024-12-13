@@ -49,6 +49,7 @@ namespace LibraryProject.Services
                 return 1;
             }
             series.Name = ser.Name;
+            series.Description = ser.Description;
             _db.BookSeries.Update(series);
             await _db.SaveChangesAsync();
             return 0;

@@ -48,7 +48,7 @@ namespace LibraryProject.Services
             databaseContext.Users.Remove(user);
             await databaseContext.SaveChangesAsync();
             return 0;
-        }
+        } 
         public static async Task<int> Update(DatabaseContext databaseContext, int id, User user)
         {
             var u = await databaseContext.Users.FindAsync(id);

@@ -20,7 +20,7 @@ namespace LibraryProject.Controllers
         [HttpGet]
         public async Task<ActionResult<List<BookPurchaseOrder>>> Get()
         {
-            return await BookOrderService.Get(_databaseContext);
+            return Ok(await BookOrderService.Get(_databaseContext));
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<BookPurchaseOrder>> Get(int id)
@@ -29,16 +29,16 @@ namespace LibraryProject.Controllers
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
-                return NotFound();
+                return NotFound("Заказ не найден");
         }
         [HttpPost]
         public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int BookId, int UserId, int StatusId)
         {
             switch (await BookOrderService.Add(_databaseContext, bookPurchaseOrderWithoutExternal, StatusId, UserId, BookId))
             {
-                case 0: return Ok();
-                case 1: return NotFound();
-                default: return BadRequest();
+                case 0: return Ok("Заказ добавлен");
+                case 1: return NotFound("Заказ не найден");
+                default: return BadRequest("Неизвестная ошибка");
             }
         }
         [HttpDelete("{id}")]
@@ -46,9 +46,9 @@ namespace LibraryProject.Controllers
         {
             switch (await BookOrderService.Delete(_databaseContext, id))
             {
-                case 0: return Ok();
-                case 1: return NotFound();
-                default: return BadRequest();
+                case 0: return Ok("Заказ удален");
+                case 1: return NotFound("Заказ не найден");
+                default: return BadRequest("Неизвестная ошибка");
             }
         }
         [HttpPut("id")]
@@ -56,9 +56,9 @@ namespace LibraryProject.Controllers
         {
             switch (await BookOrderService.Update(_databaseContext, bookPurchaseOrderWithoutExternal, statusId, UserId, BookId, id))
             {
-                case 0: return Ok();
-                case 1: return NotFound();
-                default: return BadRequest();
+                case 0: return Ok("Заказ обновлен");
+                case 1: return NotFound("Заказ не найден");
+                default: return BadRequest("Неизвестная ошибка");
             }
         }
     }

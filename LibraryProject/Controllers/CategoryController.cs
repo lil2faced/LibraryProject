@@ -27,7 +27,7 @@ namespace LibraryProject.Controllers
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
-                return NotFound();
+                return NotFound("Категория не найдена");
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Category category)
@@ -50,7 +50,7 @@ namespace LibraryProject.Controllers
                 case 0:
                     return Ok("Категория удалена");
                 case 1:
-                    return BadRequest("Ошибка. Категория не найдена");
+                    return BadRequest("Категория не найдена");
                 default:
                     return BadRequest("Неизвестная ошибка");
             }
@@ -61,7 +61,7 @@ namespace LibraryProject.Controllers
             var result = await CategoryService.UpdateByIDAsync(_databaseContext, id, category);
             if (result == 1)
                 return NotFound($"Категория с ID {id} не найдена");
-            return Ok();
+            return Ok("Категория обновлена");
         }
 
     }

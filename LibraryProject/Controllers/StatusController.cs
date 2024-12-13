@@ -19,7 +19,7 @@ namespace LibraryProject.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Status>>> Get()
         {
-            return await StatusService.GetAll(_databaseContext);
+            return Ok(await StatusService.GetAll(_databaseContext));
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Status>> Get(int id)

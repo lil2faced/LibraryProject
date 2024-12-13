@@ -15,12 +15,12 @@ namespace LibraryProject.Controllers
         public BookLoanController(DatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
-        }
+        } 
 
         [HttpGet]
         public async Task<ActionResult<List<BookLoan>>> Get()
         {
-            return await BookLoanService.Get(_databaseContext);
+            return Ok(await BookLoanService.Get(_databaseContext));
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<BookLoan>> Get(int id)
@@ -29,16 +29,16 @@ namespace LibraryProject.Controllers
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
-                return NotFound();
+                return NotFound("Запись не найдена");
         }
         [HttpPost]
         public async Task<ActionResult> Add([FromBody] BookLoanWithoutExternal bookLoanWithoutExternal, int BookId, int UserId, int StatusId)
         {
             switch (await BookLoanService.Add(_databaseContext, bookLoanWithoutExternal, UserId, BookId))
             {
-                case 0: return Ok();
-                case 1: return NotFound();
-                default: return BadRequest();
+                case 0: return Ok("Запись создана");
+                case 1: return NotFound("Запись не найдена");
+                default: return BadRequest("Неизвестная ошибка");
             }
         }
         [HttpDelete("{id}")]
@@ -46,9 +46,9 @@ namespace LibraryProject.Controllers
         {
             switch (await BookLoanService.Delete(_databaseContext, id))
             {
-                case 0: return Ok();
-                case 1: return NotFound();
-                default: return BadRequest();
+                case 0: return Ok("Запись удалена");
+                case 1: return NotFound("Запись не найдена");
+                default: return BadRequest("Неизвестная ошибка");
             }
         }
         [HttpPut("id")]
@@ -56,9 +56,9 @@ namespace LibraryProject.Controllers
         {
             switch (await BookLoanService.Update(_databaseContext, bookLoanWithoutExternal,UserId, BookId, id))
             {
-                case 0: return Ok();
-                case 1: return NotFound();
-                default: return BadRequest();
+                case 0: return Ok("Запись обновлена");
+                case 1: return NotFound("Запись не найдена");
+                default: return BadRequest("Неизвестная ошибка");
             }
         }
     }
