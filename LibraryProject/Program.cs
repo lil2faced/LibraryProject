@@ -18,6 +18,7 @@ namespace LibraryProject
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<DatabaseContext>();
+            
 
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddTransient<AuthorService>();
@@ -39,7 +40,9 @@ namespace LibraryProject
             builder.Services.AddTransient<StatusService>();
             builder.Services.AddScoped<IUserService, UserDatabaseSevice>();
             builder.Services.AddTransient<UserDatabaseSevice>();
-    
+
+            builder.Services.AddTransient<CancellationTokenSource>();
+
             builder.Services.AddAutoMapper(typeof(Program));
             var app = builder.Build();
 

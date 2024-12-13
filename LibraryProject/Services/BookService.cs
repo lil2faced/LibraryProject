@@ -4,6 +4,7 @@ using LibraryProject.Entities.EntityBook;
 using LibraryProject.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace LibraryProject.Services
 {
@@ -14,11 +15,15 @@ namespace LibraryProject.Services
         {
             _db = databaseContext;
         }
-        public async Task<int> AddBookAsync(int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook)
+        public async Task AddBookAsync(int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (GenreId == null || CategoryId == null || AuthorId == null || SeriesId == null || WithoutExternalBook == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("Аргументы равны null");
             }
             var genre = await _db.Genres.FindAsync(GenreId);
             var category = await _db.Categories.FindAsync(CategoryId);
@@ -29,11 +34,11 @@ namespace LibraryProject.Services
 
             if (genre == null || category == null || author == null || series == null)
             {
-                return 1; 
+                throw new Exception("Связанные свойства не найдены");
             }
             else if (bookTemp != null)
             {
-                return 2;
+                throw new Exception("Книга не найдена");
             }
 
             Book book = new Book()
@@ -54,49 +59,54 @@ namespace LibraryProject.Services
 
             _db.Books.Add(book);
             await _db.SaveChangesAsync();
-
-            return 0;
         }
-        public async Task<List<Book>> GetAllBooksAsync()
+        public async Task<List<Book>> GetAllBooksAsync(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await _db.Books.Include(b => b.Genre).Include(b => b.Category).Include(b => b.Series).Include(b => b.Author).Include(b => b.Reviews).ToListAsync();
         }
-        public async Task<(int, Book?)> ReturnBookByIdAsync(int? id)
+        public async Task<Book> ReturnBookByIdAsync(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("Аргумент равен null");
             }
             var book = await _db.Books.Include(b => b.Genre).Include(b => b.Category).Include(b => b.Series).Include(b => b.Author).Include(b => b.Reviews).Where(b => b.Id == id).FirstOrDefaultAsync();
             if (book == null)
             {
-                return (1, book);
+                throw new Exception("Книга не найдена");
             }
-            return (0, book);
+            return book;
         }
-        public async Task<int> DeleteByIdAsync(int? id)
+        public async Task DeleteByIdAsync(int? id)
         {
             if (id == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("Арумент равен Null");
             }
             var book1 = await _db.Books.FindAsync(id);
             if (book1 == null)
             {
-                return 1;
+                throw new Exception("Книга не найдена");
             }
             _db.Books.Remove(book1);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> UpdateByIDAsync(int? id, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook)
+        public async Task UpdateByIDAsync(int? id, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook)
         {
             if (id == null || GenreId == null || CategoryId == null || AuthorId == null || SeriesId == null || WithoutExternalBook == null)
             {
                 throw new ArgumentNullException();
             }
             var book = await _db.Books.FindAsync(id);
-            if (book == null) return 1; 
+            if (book == null) throw new Exception("Книга не найдена"); 
 
             var genre = await _db.Genres.FindAsync(GenreId);
             var category = await _db.Categories.FindAsync(CategoryId);
@@ -104,7 +114,7 @@ namespace LibraryProject.Services
             var series = await _db.BookSeries.FindAsync(SeriesId);
             if (genre == null || category == null || author == null || series == null)
             {
-                return 2; 
+                throw new Exception("Связанные свойства не найдены");
             }
             book.Name = WithoutExternalBook.Name;
             book.Genre = genre;
@@ -120,8 +130,6 @@ namespace LibraryProject.Services
             book.Series = series;
             _db.Books.Update(book);
             await _db.SaveChangesAsync();
-
-            return 0; 
         }
     }
 }

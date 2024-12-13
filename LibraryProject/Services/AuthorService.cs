@@ -12,74 +12,78 @@ namespace LibraryProject.Services
         {
             _db = databaseContext;
         }
-
-        public async Task<int> AddAuthorAsync(BookAuthor? author)
+        public async Task AddAuthorAsync(BookAuthor? author, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            } 
             if (author == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("На входе пришел NULL");
             }
             var Author = await _db.BookAuthors.Where(a => a.Name == author.Name).FirstOrDefaultAsync();
             if (Author != null)
             {
-                return 1;
+                throw new Exception("Автор не найден");
             }
             _db.BookAuthors.Add(author);
             await _db.SaveChangesAsync();
-            return 0;
         }
-
-        public async Task<List<BookAuthor>> GetAllAuthorsAsync()
+        public async Task<List<BookAuthor>> GetAllAuthorsAsync(CancellationToken cancellationToken)
         {
-            return await _db.BookAuthors.ToListAsync();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
+            return await _db.BookAuthors.ToListAsync(cancellationToken);
         }
-
-        public async Task<(int, BookAuthor?)> GetAuthorByIdAsync(int? id)
+        public async Task<BookAuthor> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
+            if (id == null)
+            {
+                throw new ArgumentNullException("На входе пришел NULL");
+            }
+            var author = await _db.BookAuthors.FindAsync(id, cancellationToken);
+            if (author == null)
+            {
+                throw new Exception("Автор не найден");
+            }
+            return author;
+        }
+        public async Task DeleteByIdAsync(int? id)
         {
             if (id == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("Id = null");
             }
             var author = await _db.BookAuthors.FindAsync(id);
             if (author == null)
             {
-                return (1, author);
-            }
-            return (0, author);
-        }
-
-        public async Task<int> DeleteByIdAsync(int? id)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException();
-            }
-            var author = await _db.BookAuthors.FindAsync(id);
-            if (author == null)
-            {
-                return 1;
+                throw new Exception("Автор не найден");
             }
             _db.BookAuthors.Remove(author);
             await _db.SaveChangesAsync();
-            return 0;
         }
-
-        public async Task<int> UpdateByIDAsync(int? id, BookAuthor aut)
+        public async Task UpdateByIDAsync(int? id, BookAuthor aut)
         {
             if (id == null || aut == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("На входе пришел NULL");
             }
             var author = await _db.BookAuthors.FindAsync(id);
             if (author == null)
             {
-                return 1;
+                throw new Exception("Автор не найден");
             }
             author.Name = aut.Name;
             author.Biography = aut.Biography;
             _db.BookAuthors.Update(author);
             await _db.SaveChangesAsync();
-            return 0;
         }
     }
 }

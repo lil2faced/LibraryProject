@@ -4,6 +4,7 @@ using LibraryProject.Entities.EntityBook;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace LibraryProject.Controllers
 {
@@ -11,59 +12,84 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class AuthorController : ControllerBase
     {
-
         private readonly AuthorService service;
-        public AuthorController(AuthorService authorService)
+        private readonly CancellationTokenSource _cts;
+        public AuthorController(AuthorService authorService, CancellationTokenSource cts)
         {
             service = authorService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<BookAuthor>>> GetAsync()
+        public async Task<ActionResult<List<BookAuthor>>> GetAsync(CancellationToken cancellationToken)
         {
-            return Ok(await service.GetAllAuthorsAsync());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await service.GetAllAuthorsAsync(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookAuthor>> GetAsync(int? id)
+        public async Task<ActionResult<BookAuthor>> GetAsync(int? id, CancellationToken cancellationToken)
         {
-            var res = await service.GetAuthorByIdAsync(id);
-            if (res.Item1 == 0)
-                return Ok(res.Item2);
-            else
-                return NotFound("Автор не найден");
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await service.GetAuthorByIdAsync(id, cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); 
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] BookAuthor? author)
+        public async Task<ActionResult> PostAsync([FromBody] BookAuthor? author, CancellationToken cancellationToken)
         {
-            switch (await service.AddAuthorAsync(author))
+            cancellationToken = _cts.Token;
+            try
             {
-                case 0:
-                    return Ok("Автор создан");
-                case 1:
-                    return NotFound("Такой автор уже существует");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await service.AddAuthorAsync(author, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            switch (await service.DeleteByIdAsync(id))
+            try
             {
-                case 0:
-                    return Ok("Автор успешно удалён");
-                case 1:
-                    return NotFound("Автор не найден");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await service.DeleteByIdAsync(id);
+                return Ok();
+            } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
+            
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody]BookAuthor bookAuthor)
         {
-            var result = await service.UpdateByIDAsync(id, bookAuthor);
-            if (result == 1)
-                return NotFound($"Автор с ID {id} не найден");
-            return Ok("Автор обновлён");
+            try
+            {
+                await service.UpdateByIDAsync(id, bookAuthor);
+                return Ok();
+            } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
     }
 }
