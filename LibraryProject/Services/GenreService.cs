@@ -1,12 +1,18 @@
 ﻿using LibraryProject.Applications;
 using LibraryProject.Entities.BookProps;
 using Microsoft.EntityFrameworkCore;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class GenreService
+    public class GenreService : IGenreService
     {
-        public static async Task<int> AddAsync(Genre genre, DatabaseContext _db)
+        private readonly DatabaseContext _db;
+        public GenreService(DatabaseContext databaseContext)
+        {
+            _db = databaseContext;
+        }
+        public async Task<int> AddAsync(Genre genre)
         {
             var genre1 = await _db.Genres.Where(a => a.Name == genre.Name).FirstOrDefaultAsync();
             if (genre1 != null)
@@ -17,11 +23,11 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public static async Task<List<Genre>> GetAllAsync(DatabaseContext _db)
+        public async Task<List<Genre>> GetAllAsync()
         {
             return await _db.Genres.ToListAsync();
         }
-        public static async Task<(int, Genre?)> GetByIdAsync(int id, DatabaseContext _db)
+        public async Task<(int, Genre?)> GetByIdAsync(int id)
         {
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
@@ -30,7 +36,7 @@ namespace LibraryProject.Services
             }
             return (0, genre);
         }
-        public static async Task<int> DeleteByIdAsync(int id, DatabaseContext _db)
+        public async Task<int> DeleteByIdAsync(int id)
         {
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
@@ -41,7 +47,7 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> UpdateByIDAsync(DatabaseContext _db, int id, Genre gen)
+        public async Task<int> UpdateByIDAsync(int id, Genre gen)
         {
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)

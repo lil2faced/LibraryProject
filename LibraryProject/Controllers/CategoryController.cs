@@ -10,20 +10,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public CategoryController(DatabaseContext database)
+        private readonly CategoryService categoryService;
+        public CategoryController(CategoryService categoryService)
         {
-            _databaseContext = database;
+            this.categoryService = categoryService;
         }
         [HttpGet]
         public async Task<ActionResult<List<Category>>> Get()
         {
-            return Ok(await CategoryService.GetAllAsync(_databaseContext));
+            return Ok(await categoryService.GetAllAsync());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Category?>> Get(int id)
         {
-            var res = await CategoryService.GetByIdAsync(id, _databaseContext);
+            var res = await categoryService.GetByIdAsync(id);
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
@@ -32,7 +32,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Category category)
         {
-            switch (await CategoryService.AddAsync(category, _databaseContext))
+            switch (await categoryService.AddAsync(category))
             {
                 case 0:
                     return Ok("Категория создана");
@@ -45,7 +45,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            switch (await CategoryService.DeleteByIdAsync(id, _databaseContext))
+            switch (await categoryService.DeleteByIdAsync(id))
             {
                 case 0:
                     return Ok("Категория удалена");
@@ -58,7 +58,7 @@ namespace LibraryProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Category category)
         {
-            var result = await CategoryService.UpdateByIDAsync(_databaseContext, id, category);
+            var result = await categoryService.UpdateByIDAsync(id, category);
             if (result == 1)
                 return NotFound($"Категория с ID {id} не найдена");
             return Ok("Категория обновлена");

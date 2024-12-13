@@ -1,12 +1,18 @@
 ﻿using LibraryProject.Applications;
 using LibraryProject.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class StatusService
+    public class StatusService : IStatusService
     {
-        public static async Task<int> Add(DatabaseContext databaseContext,Status status)
+        private readonly DatabaseContext databaseContext;
+        public StatusService(DatabaseContext databaseContext)
+        {
+            this.databaseContext = databaseContext;
+        }
+        public async Task<int> Add(Status status)
         {
             var temp = await databaseContext.Statuses.Where(s => s.Name == status.Name).FirstOrDefaultAsync();
             if (temp != null)
@@ -17,11 +23,11 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<List<Status>> GetAll(DatabaseContext databaseContext)
+        public async Task<List<Status>> GetAll()
         {
             return await databaseContext.Statuses.ToListAsync();
         }
-        public static async Task<(int,Status?)> GetById(DatabaseContext databaseContext, int id)
+        public async Task<(int,Status?)> GetById(int id)
         {
             var status = await databaseContext.Statuses.FindAsync(id);
             if (status == null)
@@ -30,7 +36,7 @@ namespace LibraryProject.Services
             }
             return (0, status);
         }
-        public static async Task<int> Update(DatabaseContext databaseContext, int id, Status status)
+        public async Task<int> Update(int id, Status status)
         {
             var temp = databaseContext.Statuses.Find(id);
             if (temp == null)
@@ -42,7 +48,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> Delete(DatabaseContext databaseContext, int id)
+        public async Task<int> Delete(int id)
         {
             var temp = databaseContext.Statuses.Find(id);
             if (temp == null)
@@ -53,6 +59,5 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-
     }
 }

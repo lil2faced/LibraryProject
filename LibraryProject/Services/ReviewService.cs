@@ -5,14 +5,20 @@ using LibraryProject.Entities.EntityRewiev;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class ReviewService
+    public class ReviewService : IReviewService
     {
-        public static async Task<int> AddAsync(DatabaseContext _db, int BookId, ReviewWithoutExternal reviewWithout)
+        private readonly DatabaseContext databaseContext;
+        public ReviewService(DatabaseContext databaseContext)
         {
-            var book = await _db.Books.FindAsync(BookId);
+            this.databaseContext = databaseContext;
+        }
+        public async Task<int> AddAsync(int BookId, ReviewWithoutExternal reviewWithout)
+        {
+            var book = await databaseContext.Books.FindAsync(BookId);
             if (book == null)
             {
                 return 1;
@@ -25,25 +31,25 @@ namespace LibraryProject.Services
                 DateReview = reviewWithout.DateReview
             };
 
-            _db.Reviews.Add(review);
-            await _db.SaveChangesAsync();
+            databaseContext.Reviews.Add(review);
+            await databaseContext.SaveChangesAsync();
 
             book.Reviews.Add(review);
 
-            await _db.SaveChangesAsync();
+            await databaseContext.SaveChangesAsync();
 
             return 0;
         }
-        public static async Task<List<Review>> GetAllReviews(DatabaseContext database)
+        public async Task<List<Review>> GetAllReviews()
         {
-            return await database.Reviews.ToListAsync();
+            return await databaseContext.Reviews.ToListAsync();
         }
-        public static async Task<Review?> GetReviewById(DatabaseContext databaseContext, int id)
+        public async Task<Review?> GetReviewById(int id)
         {
             var review = await databaseContext.Reviews.FindAsync(id);
             return review;
         }
-        public static async Task<int> DeleteReviewById(DatabaseContext databaseContext, int id)
+        public async Task<int> DeleteReviewById(int id)
         {
             var review = await databaseContext.Reviews.FindAsync(id);
             if (review == null)
@@ -54,7 +60,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> UpdateReview(DatabaseContext databaseContext, int id, ReviewWithoutExternal rev)
+        public async Task<int> UpdateReview(int id, ReviewWithoutExternal rev)
         {
             var review = await databaseContext.Reviews.FindAsync(id);
             if (review == null)

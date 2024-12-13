@@ -11,20 +11,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class StatusController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public StatusController(DatabaseContext databaseContext)
+        private readonly StatusService statusService;
+        public StatusController(StatusService statusService)
         {
-            _databaseContext = databaseContext;
+            this.statusService = statusService;
         }
         [HttpGet]
         public async Task<ActionResult<List<Status>>> Get()
         {
-            return Ok(await StatusService.GetAll(_databaseContext));
+            return Ok(await statusService.GetAll());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Status>> Get(int id)
         {
-            var res = await StatusService.GetById(_databaseContext, id);
+            var res = await statusService.GetById(id);
             if (res.Item1 == 1)
             {
                 return NotFound("Статус не найден");
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> Add([FromBody]Status status)
         {
-            int res = await StatusService.Add(_databaseContext, status);
+            int res = await statusService.Add(status);
             if (res == 1)
             {
                 return BadRequest("Такой статус уже есть");
@@ -44,7 +44,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            int res = await StatusService.Delete(_databaseContext, id);
+            int res = await statusService.Delete(id);
             if (res == 0)
             {
                 return Ok("Статус удален");
@@ -54,7 +54,7 @@ namespace LibraryProject.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] Status status)
         {
-            int res = await StatusService.Update(_databaseContext, id, status);
+            int res = await statusService.Update(id, status);
             if (res == 1)
             {
                 return BadRequest("Такого статуса нету");

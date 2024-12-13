@@ -1,12 +1,18 @@
 ﻿using LibraryProject.Applications;
 using LibraryProject.Entities;
 using Microsoft.EntityFrameworkCore;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class UserDatabaseSevice
+    public class UserDatabaseSevice : IUserService
     {
-        public static async Task<(int, User?)> Get(DatabaseContext databaseContext, int id)
+        private readonly DatabaseContext databaseContext;
+        public UserDatabaseSevice(DatabaseContext databaseContext)
+        {
+            this.databaseContext = databaseContext;
+        }
+        public async Task<(int, User?)> Get(int id)
         {
             var user = await databaseContext.Users.FindAsync(id);
             if (user == null)
@@ -15,12 +21,12 @@ namespace LibraryProject.Services
             }
             return (0, user);
         }
-        public static async Task<List<User>> GetAll(DatabaseContext databaseContext)
+        public async Task<List<User>> GetAll()
         {
             var users = await databaseContext.Users.ToListAsync();
             return users;
         }
-        public static async Task<int> Add(DatabaseContext databaseContext, UserWithoutExternal user)
+        public async Task<int> Add(UserWithoutExternal user)
         {
             var us = await databaseContext.Users.Where(u => u.PhoneNumber == user.PhoneNumber).FirstOrDefaultAsync();
             if (us != null)
@@ -38,7 +44,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> DeleteById(DatabaseContext databaseContext, int id)
+        public async Task<int> DeleteById(int id)
         {
             var user = await databaseContext.Users.FindAsync(id);
             if (user == null)
@@ -49,7 +55,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         } 
-        public static async Task<int> Update(DatabaseContext databaseContext, int id, User user)
+        public async Task<int> Update(int id, User user)
         {
             var u = await databaseContext.Users.FindAsync(id);
             if (user == null || u == null)

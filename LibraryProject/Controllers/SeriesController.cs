@@ -10,20 +10,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class SeriesController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public SeriesController(DatabaseContext database)
+        private readonly SeriesService seriesService;
+        public SeriesController(SeriesService seriesService)
         {
-            _databaseContext = database;
+            this.seriesService = seriesService;
         }
         [HttpGet]
         public async Task<ActionResult<List<Series>>> Get()
         {
-            return Ok(await SeriesService.GetAllAsync(_databaseContext));
+            return Ok(await seriesService.GetAllAsync());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Series?>> Get(int id)
         {
-            var ser = await SeriesService.GetByIdAsync(id, _databaseContext);
+            var ser = await seriesService.GetByIdAsync(id);
             if (ser.Item1 == 0)
                 return Ok(ser.Item2);
             else
@@ -32,7 +32,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Series series)
         {
-            switch (await SeriesService.AddAsync(series, _databaseContext))
+            switch (await seriesService.AddAsync(series))
             {
                 case 0:
                     return Ok("Серия книг создана");
@@ -45,7 +45,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            switch (await SeriesService.DeleteByIdAsync(id, _databaseContext))
+            switch (await seriesService.DeleteByIdAsync(id))
             {
                 case 0:
                     return Ok("Серия удалена");
@@ -58,7 +58,7 @@ namespace LibraryProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Series series)
         {
-            var result = await SeriesService.UpdateByIDAsync(_databaseContext, id, series);
+            var result = await seriesService.UpdateByIDAsync(id, series);
             if (result == 1)
                 return NotFound($"Серия с ID {id} не найдена");
             return Ok("Серия обновлена");

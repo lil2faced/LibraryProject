@@ -1,12 +1,18 @@
 ﻿using LibraryProject.Applications;
 using LibraryProject.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class BookOrderService
+    public class BookOrderService : IOrderService
     {
-        public static async Task<int> Add(DatabaseContext databaseContext, BookPurchaseOrderWithoutExternal bookPurchaseOrder, int StatusId, int UserId, int BookId)
+        private readonly DatabaseContext databaseContext;
+        public BookOrderService(DatabaseContext databaseContext)
+        {
+            this.databaseContext = databaseContext;
+        }
+        public async Task<int> Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int StatusId, int UserId, int BookId)
         {
             var status = await databaseContext.Statuses.FindAsync(StatusId);
             var book = await databaseContext.Books.FindAsync(BookId);
@@ -30,7 +36,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<(int, BookPurchaseOrder?)> GetById(DatabaseContext databaseContext, int id)
+        public async Task<(int, BookPurchaseOrder?)> GetById(int id)
         {
             var temp = await databaseContext.Orders
                 .Include(b=> b.Status)
@@ -43,14 +49,14 @@ namespace LibraryProject.Services
             }
             return (0, temp);
         }
-        public static async Task<List<BookPurchaseOrder>> Get(DatabaseContext databaseContext)
+        public async Task<List<BookPurchaseOrder>> Get()
         {
             return await databaseContext.Orders
                 .Include(b => b.Status)
                 .Include(b => b.User)
                 .ToListAsync();
         }
-        public static async Task<int> Delete(DatabaseContext databaseContext, int id)
+        public async Task<int> Delete(int id)
         {
             var order = await databaseContext.Orders.FindAsync(id);
             if (order == null)
@@ -61,7 +67,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> Update(DatabaseContext databaseContext, BookPurchaseOrderWithoutExternal bookPurchaseOrder, int StatusId, int UserId, int BookId, int id)
+        public async Task<int> Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int StatusId, int UserId, int BookId, int id)
         {
             var temp = await databaseContext.Orders.FindAsync(id);
             if (temp == null) return 1;

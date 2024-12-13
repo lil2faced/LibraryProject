@@ -12,20 +12,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly DatabaseContext _db;
-        public BookController(DatabaseContext db)
+        private readonly BookService bookService;
+        public BookController(BookService bookService)
         {
-            _db = db;
+            this.bookService = bookService;
         }
         [HttpGet]
         public async Task<ActionResult<List<Book>>> GetAsync()
         {
-            return Ok(await BookService.GetAllBooksAsync(_db));
+            return Ok(await bookService.GetAllBooksAsync());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetAsync(int id)
         {
-            var res = await BookService.ReturnBookByIdAsync(_db, id);
+            var res = await bookService.ReturnBookByIdAsync(id);
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] BookWithoutExternal bookNo, int GenreId, int CategoryId, int AuthorId, int SeriesID)
         {
-            switch (await BookService.AddBookAsync(_db, GenreId, CategoryId, AuthorId, SeriesID, bookNo))
+            switch (await bookService.AddBookAsync(GenreId, CategoryId, AuthorId, SeriesID, bookNo))
             {
                 case 0:
                     return Ok("Книга создана");
@@ -49,7 +49,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            switch (await BookService.DeleteByIdAsync(_db, id))
+            switch (await bookService.DeleteByIdAsync(id))
             {
                 case 0:
                     return Ok("Книга удалена");
@@ -62,7 +62,7 @@ namespace LibraryProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] BookWithoutExternal book, int GenreId, int CategoryId, int AuthorId, int SeriesID)
         {
-            var result = await BookService.UpdateByIDAsync(_db, id, GenreId, CategoryId, AuthorId, SeriesID, book);
+            var result = await bookService.UpdateByIDAsync(id, GenreId, CategoryId, AuthorId, SeriesID, book);
             if (result == 1)
                 return NotFound($"Книга с ID {id} не найдена");
             else if (result == 2)

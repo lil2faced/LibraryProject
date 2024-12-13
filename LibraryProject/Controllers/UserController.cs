@@ -11,20 +11,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public UserController(DatabaseContext databaseContext)
+        private readonly UserDatabaseSevice userService;
+        public UserController(UserDatabaseSevice userService)
         {
-            _databaseContext = databaseContext;
+            this.userService = userService;
         }
         [HttpGet]
         public async Task<ActionResult<List<User>>> Get()
         {
-            return Ok(await UserDatabaseSevice.GetAll(_databaseContext));
+            return Ok(await userService.GetAll());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<User?>> GetById(int id)
         {
-            var res = await UserDatabaseSevice.Get(_databaseContext, id);
+            var res = await userService.Get(id);
             if (res.Item1 == 1)
             {
                 return NotFound("Пользователь не найден");
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            int res = await UserDatabaseSevice.DeleteById(_databaseContext, id);
+            int res = await userService.DeleteById(id);
             if (res == 0)
             {
                 return Ok("Пользователь удален");
@@ -44,7 +44,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> Add([FromBody] UserWithoutExternal user)
         {
-            int res = await UserDatabaseSevice.Add(_databaseContext, user);
+            int res = await userService.Add(user);
             if (res == 1)
             {
                 return BadRequest("Такой пользователь уже есть");
@@ -54,7 +54,7 @@ namespace LibraryProject.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] User user)
         {
-            int res = await UserDatabaseSevice.Update(_databaseContext, id, user);
+            int res = await userService.Update(id, user);
             if (res == 1)
             {
                 return BadRequest("Такого пользователя нету");

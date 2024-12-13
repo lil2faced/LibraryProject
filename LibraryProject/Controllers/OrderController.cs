@@ -11,21 +11,21 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public OrderController(DatabaseContext databaseContext)
+        private readonly BookOrderService orderService;
+        public OrderController(BookOrderService orderService)
         {
-            _databaseContext = databaseContext;
+            this.orderService = orderService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<BookPurchaseOrder>>> Get()
         {
-            return Ok(await BookOrderService.Get(_databaseContext));
+            return Ok(await orderService.Get());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<BookPurchaseOrder>> Get(int id)
         {
-            var res = await BookOrderService.GetById(_databaseContext, id);
+            var res = await orderService.GetById(id);
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int BookId, int UserId, int StatusId)
         {
-            switch (await BookOrderService.Add(_databaseContext, bookPurchaseOrderWithoutExternal, StatusId, UserId, BookId))
+            switch (await orderService.Add(bookPurchaseOrderWithoutExternal, StatusId, UserId, BookId))
             {
                 case 0: return Ok("Заказ добавлен");
                 case 1: return NotFound("Заказ не найден");
@@ -44,7 +44,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            switch (await BookOrderService.Delete(_databaseContext, id))
+            switch (await orderService.Delete(id))
             {
                 case 0: return Ok("Заказ удален");
                 case 1: return NotFound("Заказ не найден");
@@ -54,7 +54,7 @@ namespace LibraryProject.Controllers
         [HttpPut("id")]
         public async Task<ActionResult> Update(int id, BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int statusId, int UserId, int BookId)
         {
-            switch (await BookOrderService.Update(_databaseContext, bookPurchaseOrderWithoutExternal, statusId, UserId, BookId, id))
+            switch (await orderService.Update(bookPurchaseOrderWithoutExternal, statusId, UserId, BookId, id))
             {
                 case 0: return Ok("Заказ обновлен");
                 case 1: return NotFound("Заказ не найден");

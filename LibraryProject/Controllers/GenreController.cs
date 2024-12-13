@@ -1,5 +1,6 @@
 ﻿using LibraryProject.Applications;
 using LibraryProject.Entities.BookProps;
+using LibraryProject.Interfaces;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,20 +11,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class GenreController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public GenreController(DatabaseContext database)
+        private readonly GenreService genreService;
+        public GenreController(GenreService genreService)
         {
-            _databaseContext = database;
+            this.genreService = genreService;
         }
         [HttpGet]
         public async Task<ActionResult<List<Genre>>> Get()
         {
-            return Ok(await GenreService.GetAllAsync(_databaseContext));
+            return Ok(await genreService.GetAllAsync());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Genre?>> Get(int id)
         {
-            var gen = await GenreService.GetByIdAsync(id, _databaseContext);
+            var gen = await genreService.GetByIdAsync(id);
             if (gen.Item1 == 0)
                 return Ok(gen.Item2);
             else
@@ -32,7 +33,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] Genre genre)
         {
-            switch (await GenreService.AddAsync(genre, _databaseContext))
+            switch (await genreService.AddAsync(genre))
             {
                 case 0:
                     return Ok("Жанр создан");
@@ -45,7 +46,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            switch (await GenreService.DeleteByIdAsync(id, _databaseContext))
+            switch (await genreService.DeleteByIdAsync(id))
             {
                 case 0:
                     return Ok("Жанр удален");
@@ -58,7 +59,7 @@ namespace LibraryProject.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Genre genre)
         {
-            var result = await GenreService.UpdateByIDAsync(_databaseContext, id, genre);
+            var result = await genreService.UpdateByIDAsync(id, genre);
             if (result == 1)
                 return NotFound($"Жанр с ID {id} не найден");
             return Ok("Жанр обновлен");

@@ -1,12 +1,18 @@
 ﻿using LibraryProject.Applications;
 using LibraryProject.Entities.BookProps;
 using Microsoft.EntityFrameworkCore;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class CategoryService
+    public class CategoryService : ICategoryService
     {
-        public static async Task<int> AddAsync(Category category, DatabaseContext _db)
+        private readonly DatabaseContext _db;
+        public CategoryService(DatabaseContext databaseContext)
+        {
+            _db = databaseContext;
+        }
+        public async Task<int> AddAsync(Category category)
         {
             var category1 = await _db.Categories.Where(a => a.Name == category.Name).FirstOrDefaultAsync();
             if (category1 != null)
@@ -17,11 +23,11 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public static async Task<List<Category>> GetAllAsync(DatabaseContext _db)
+        public async Task<List<Category>> GetAllAsync()
         {
             return await _db.Categories.ToListAsync();
         }
-        public static async Task<(int, Category?)> GetByIdAsync(int id, DatabaseContext _db)
+        public async Task<(int, Category?)> GetByIdAsync(int id)
         {
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
@@ -30,7 +36,7 @@ namespace LibraryProject.Services
             }
             return (0, category);
         }
-        public static async Task<int> DeleteByIdAsync(int id, DatabaseContext _db)
+        public async Task<int> DeleteByIdAsync(int id)
         {
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
@@ -41,7 +47,7 @@ namespace LibraryProject.Services
             await _db.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> UpdateByIDAsync(DatabaseContext _db, int id, Category cat)
+        public async Task<int> UpdateByIDAsync(int id, Category cat)
         {
             var category = await _db.Categories.FindAsync(id);
             if (category == null)

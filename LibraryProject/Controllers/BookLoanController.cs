@@ -11,21 +11,21 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class BookLoanController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
-        public BookLoanController(DatabaseContext databaseContext)
+        private readonly BookLoanService bookService;
+        public BookLoanController(BookLoanService bookService)
         {
-            _databaseContext = databaseContext;
-        } 
+            this.bookService = bookService;
+        }
 
         [HttpGet]
         public async Task<ActionResult<List<BookLoan>>> Get()
         {
-            return Ok(await BookLoanService.Get(_databaseContext));
+            return Ok(await bookService.Get());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<BookLoan>> Get(int id)
         {
-            var res = await BookLoanService.GetById(_databaseContext, id);
+            var res = await bookService.GetById(id);
             if (res.Item1 == 0)
                 return Ok(res.Item2);
             else
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult> Add([FromBody] BookLoanWithoutExternal bookLoanWithoutExternal, int BookId, int UserId, int StatusId)
         {
-            switch (await BookLoanService.Add(_databaseContext, bookLoanWithoutExternal, UserId, BookId))
+            switch (await bookService.Add(bookLoanWithoutExternal, UserId, BookId))
             {
                 case 0: return Ok("Запись создана");
                 case 1: return NotFound("Запись не найдена");
@@ -44,7 +44,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            switch (await BookLoanService.Delete(_databaseContext, id))
+            switch (await bookService.Delete(id))
             {
                 case 0: return Ok("Запись удалена");
                 case 1: return NotFound("Запись не найдена");
@@ -54,7 +54,7 @@ namespace LibraryProject.Controllers
         [HttpPut("id")]
         public async Task<ActionResult> Update(int id, BookLoanWithoutExternal bookLoanWithoutExternal, int statusId, int UserId, int BookId)
         {
-            switch (await BookLoanService.Update(_databaseContext, bookLoanWithoutExternal,UserId, BookId, id))
+            switch (await bookService.Update(bookLoanWithoutExternal,UserId, BookId, id))
             {
                 case 0: return Ok("Запись обновлена");
                 case 1: return NotFound("Запись не найдена");

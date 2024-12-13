@@ -10,20 +10,20 @@ namespace LibraryProject.Controllers
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        private readonly DatabaseContext databaseContext;
-        public ReviewController(DatabaseContext database)
+        private readonly ReviewService reviewService;
+        public ReviewController(ReviewService reviewService)
         {
-            databaseContext = database;
+            this.reviewService = reviewService;
         }
         [HttpGet]
         public async Task<ActionResult<List<Review>>> GetByBookId()
         {
-            return Ok(await ReviewService.GetAllReviews(databaseContext));
+            return Ok(await reviewService.GetAllReviews());
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> Get(int id)
         {
-            var res = await ReviewService.GetReviewById(databaseContext, id);
+            var res = await reviewService.GetReviewById(id);
             if (res == null)
             {
                 return BadRequest("Такого отзыва нету");
@@ -33,7 +33,7 @@ namespace LibraryProject.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> Add(int bookId, [FromBody]ReviewWithoutExternal reviewWithoutExternal)
         {
-            int res = await ReviewService.AddAsync(databaseContext, bookId, reviewWithoutExternal);
+            int res = await reviewService.AddAsync(bookId, reviewWithoutExternal);
             if (res == 1)
             {
                 return BadRequest("Книга с таким Id не найдена");
@@ -43,7 +43,7 @@ namespace LibraryProject.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var res = await ReviewService.DeleteReviewById(databaseContext, id);
+            var res = await reviewService.DeleteReviewById(id);
             if (res == 1)
             {
                 return NotFound("Отзыв не найден");
@@ -53,7 +53,7 @@ namespace LibraryProject.Controllers
         [HttpPut]
         public async Task<ActionResult> Update(int id, [FromBody] ReviewWithoutExternal reviewWithoutExternal)
         {
-            var res = await ReviewService.UpdateReview(databaseContext, id, reviewWithoutExternal);
+            var res = await reviewService.UpdateReview(id, reviewWithoutExternal);
             if (res == 1)
             {
                 return NotFound("Отзыв не найден");

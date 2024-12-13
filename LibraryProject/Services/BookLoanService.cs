@@ -2,12 +2,18 @@
 using LibraryProject.Entities.EntityBookLoan;
 using LibraryProject.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
+using LibraryProject.Interfaces;
 
 namespace LibraryProject.Services
 {
-    public class BookLoanService
+    public class BookLoanService : ILoanService
     {
-        public static async Task<int> Add(DatabaseContext databaseContext, BookLoanWithoutExternal bookLoanWithoutExternal, int UserId, int BookId)
+        private readonly DatabaseContext databaseContext;
+        public BookLoanService(DatabaseContext databaseContext)
+        {
+            this.databaseContext = databaseContext;
+        }
+        public async Task<int> Add(BookLoanWithoutExternal bookLoanWithoutExternal, int UserId, int BookId)
         {
             var book = await databaseContext.Books.FindAsync(BookId);
             var user = await databaseContext.Users.FindAsync(UserId);
@@ -28,7 +34,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<(int, BookLoan?)> GetById(DatabaseContext databaseContext, int id)
+        public async Task<(int, BookLoan?)> GetById(int id)
         {
             var temp = await databaseContext.BookLoans
                 .Include(b => b.User)
@@ -40,13 +46,13 @@ namespace LibraryProject.Services
             }
             return (0, temp);
         }
-        public static async Task<List<BookLoan>> Get(DatabaseContext databaseContext)
+        public async Task<List<BookLoan>> Get()
         {
             return await databaseContext.BookLoans
                 .Include(b => b.User)
                 .ToListAsync();
         }
-        public static async Task<int> Delete(DatabaseContext databaseContext, int id)
+        public async Task<int> Delete(int id)
         {
             var loan = await databaseContext.BookLoans.FindAsync(id);
             if (loan == null)
@@ -57,7 +63,7 @@ namespace LibraryProject.Services
             await databaseContext.SaveChangesAsync();
             return 0;
         }
-        public static async Task<int> Update(DatabaseContext databaseContext, BookLoanWithoutExternal bookLoanWithoutExternal, int UserId, int BookId, int id)
+        public async Task<int> Update(BookLoanWithoutExternal bookLoanWithoutExternal, int UserId, int BookId, int id)
         {
             var temp = await databaseContext.BookLoans.FindAsync(id);
             if (temp == null) return 1;
