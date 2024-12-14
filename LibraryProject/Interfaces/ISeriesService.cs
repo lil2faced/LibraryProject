@@ -4,10 +4,10 @@ namespace LibraryProject.Interfaces
 {
     public interface ISeriesService
     {
-        Task<int> AddAsync(Series series);
-        Task<List<Series>> GetAllAsync();
-        Task<(int, Series?)> GetByIdAsync(int? id);
-        Task<int> DeleteByIdAsync(int? id);
-        Task<int> UpdateByIDAsync(int? id, Series ser);
+        Task AddAsync(Series series, CancellationToken cancellationToken);
+        Task<List<Series>> GetAllAsync(CancellationToken cancellationToken);
+        Task<Series> GetByIdAsync(int? id, CancellationToken cancellationToken);
+        Task DeleteByIdAsync(int? id);
+        Task UpdateByIDAsync(int? id, Series ser);
     }
 }

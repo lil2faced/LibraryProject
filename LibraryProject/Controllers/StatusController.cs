@@ -12,54 +12,83 @@ namespace LibraryProject.Controllers
     public class StatusController : ControllerBase
     {
         private readonly StatusService statusService;
-        public StatusController(StatusService statusService)
+        private readonly CancellationTokenSource _cts;
+        public StatusController(StatusService statusService, CancellationTokenSource cts)
         {
             this.statusService = statusService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Status>>> Get()
+        public async Task<ActionResult<List<Status>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await statusService.GetAll());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await statusService.GetAll(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Status>> Get(int? id)
+        public async Task<ActionResult<Status>> Get(int? id, CancellationToken token)
         {
-            var res = await statusService.GetById(id);
-            if (res.Item1 == 1)
+            token = _cts.Token;
+            try
             {
-                return NotFound("Статус не найден");
+                await statusService.GetById(id, token);
+                return Ok();
             }
-            return Ok(res.Item2);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody]Status status)
+        public async Task<ActionResult> Add([FromBody]Status status, CancellationToken token)
         {
-            int res = await statusService.Add(status);
-            if (res == 1)
+            token = _cts.Token;
+            try
             {
-                return BadRequest("Такой статус уже есть");
+                await statusService.Add(status, token);
+                return Ok();
             }
-            return Ok("Статус создан");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int? id)
         {
-            int res = await statusService.Delete(id);
-            if (res == 0)
+            try
             {
-                return Ok("Статус удален");
+                await statusService.Delete(id);
+                return Ok();
             }
-            return NotFound("Статус не найден");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int? id, [FromBody] Status status)
         {
-            int res = await statusService.Update(id, status);
-            if (res == 1)
+            try
             {
-                return BadRequest("Такого статуса нету");
+                await statusService.Update(id, status);
+                return Ok();
             }
-            return Ok("Статус обновлён");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
     }
 }

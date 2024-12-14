@@ -12,52 +12,81 @@ namespace LibraryProject.Controllers
     public class OrderController : ControllerBase
     {
         private readonly BookOrderService orderService;
-        public OrderController(BookOrderService orderService)
+        private readonly CancellationTokenSource _cts;
+        public OrderController(BookOrderService orderService, CancellationTokenSource cts)
         {
             this.orderService = orderService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<BookPurchaseOrder>>> Get()
+        public async Task<ActionResult<List<BookPurchaseOrder>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await orderService.Get());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await orderService.Get(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookPurchaseOrder>> Get(int? id)
+        public async Task<ActionResult<BookPurchaseOrder>> Get(int? id, CancellationToken token)
         {
-            var res = await orderService.GetById(id);
-            if (res.Item1 == 0)
-                return Ok(res.Item2);
-            else
-                return NotFound("Заказ не найден");
+            token = _cts.Token;
+            try
+            {
+                return Ok(await orderService.GetById(id, token));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? BookId, int? UserId, int? StatusId)
+        public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? BookId, int? UserId, int? StatusId, CancellationToken token)
         {
-            switch (await orderService.Add(bookPurchaseOrderWithoutExternal, StatusId, UserId, BookId))
+            token = _cts.Token;
+            try
             {
-                case 0: return Ok("Заказ добавлен");
-                case 1: return NotFound("Заказ не найден");
-                default: return BadRequest("Неизвестная ошибка");
+                await orderService.Add(bookPurchaseOrderWithoutExternal, StatusId, UserId, BookId, token);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int? id)
         {
-            switch (await orderService.Delete(id))
+            try
             {
-                case 0: return Ok("Заказ удален");
-                case 1: return NotFound("Заказ не найден");
-                default: return BadRequest("Неизвестная ошибка");
+                await orderService.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpPut("id")]
         public async Task<ActionResult> Update(int id, BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? statusId, int? UserId, int? BookId)
         {
-            switch (await orderService.Update(bookPurchaseOrderWithoutExternal, statusId, UserId, BookId, id))
+            try
             {
-                case 0: return Ok("Заказ обновлен");
-                case 1: return NotFound("Заказ не найден");
-                default: return BadRequest("Неизвестная ошибка");
+                await orderService.Update(bookPurchaseOrderWithoutExternal, statusId, UserId, BookId, id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
     }

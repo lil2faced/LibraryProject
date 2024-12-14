@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId)
+        public async Task Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (bookPurchaseOrder == null || StatusId == null || UserId == null || BookId == null)
             {
                 throw new ArgumentNullException();
@@ -23,7 +27,7 @@ namespace LibraryProject.Services
             var user = await databaseContext.Users.FindAsync(UserId);
             if (status == null || book == null || user == null)
             {
-                return 1;
+                throw new Exception("Связанные параметры не найдены");
             }
             BookPurchaseOrder order = new()
             {
@@ -38,10 +42,13 @@ namespace LibraryProject.Services
             };
             await databaseContext.Orders.AddAsync(order);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<(int, BookPurchaseOrder?)> GetById(int? id)
+        public async Task<BookPurchaseOrder> GetById(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -53,18 +60,22 @@ namespace LibraryProject.Services
                 .FirstOrDefaultAsync();
             if (temp == null)
             {
-                return (1, null);
+                throw new Exception("Заявка не найдена");
             }
-            return (0, temp);
+            return temp;
         }
-        public async Task<List<BookPurchaseOrder>> Get()
+        public async Task<List<BookPurchaseOrder>> Get(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await databaseContext.Orders
                 .Include(b => b.Status)
                 .Include(b => b.User)
                 .ToListAsync();
         }
-        public async Task<int> Delete(int? id)
+        public async Task Delete(int? id)
         {
             if (id == null)
             {
@@ -73,27 +84,26 @@ namespace LibraryProject.Services
             var order = await databaseContext.Orders.FindAsync(id);
             if (order == null)
             {
-                return 1;
+                throw new Exception("Заявка не найдена");
             }
             databaseContext.Orders.Remove(order);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id)
+        public async Task Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id)
         {
             if (StatusId == null || bookPurchaseOrder == null || UserId == null || BookId == null || id == null)
             {
                 throw new ArgumentNullException();
             }
             var temp = await databaseContext.Orders.FindAsync(id);
-            if (temp == null) return 1;
+            if (temp == null) throw new Exception("Заявка не найдена");
 
             var status = await databaseContext.Statuses.FindAsync(StatusId);
             var book = await databaseContext.Books.FindAsync(BookId);
             var user = await databaseContext.Users.FindAsync(UserId);
             if (status == null || book == null || user == null)
             {
-                return 1;
+                throw new Exception("Связанные свойства не найдены");
             }
             BookPurchaseOrder order = new()
             {
@@ -108,7 +118,6 @@ namespace LibraryProject.Services
             };
             databaseContext.Orders.Update(order);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
     }
 }

@@ -12,54 +12,84 @@ namespace LibraryProject.Controllers
     public class BookLoanController : ControllerBase
     {
         private readonly BookLoanService bookService;
-        public BookLoanController(BookLoanService bookService)
+        private readonly CancellationTokenSource _cts;
+        public BookLoanController(BookLoanService bookService, CancellationTokenSource cts)
         {
             this.bookService = bookService;
+            _cts = cts;
         }
-
         [HttpGet]
-        public async Task<ActionResult<List<BookLoan>>> Get()
+        public async Task<ActionResult<List<BookLoan>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await bookService.Get());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await bookService.Get(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookLoan>> Get(int? id)
+        public async Task<ActionResult<BookLoan>> Get(int? id, CancellationToken cancellationToken)
         {
-            var res = await bookService.GetById(id);
-            if (res.Item1 == 0)
-                return Ok(res.Item2);
-            else
-                return NotFound("Запись не найдена");
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await bookService.GetById(id, cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] BookLoanWithoutExternal bookLoanWithoutExternal, int? BookId, int? UserId, int? StatusId)
+        public async Task<ActionResult> Add([FromBody] BookLoanWithoutExternal bookLoanWithoutExternal, int? BookId, int? UserId, int? StatusId, CancellationToken cancellationToken)
         {
-            switch (await bookService.Add(bookLoanWithoutExternal, UserId, BookId))
+            cancellationToken = _cts.Token;
+            try
             {
-                case 0: return Ok("Запись создана");
-                case 1: return NotFound("Запись не найдена");
-                default: return BadRequest("Неизвестная ошибка");
+                await bookService.Add(bookLoanWithoutExternal, UserId, BookId, cancellationToken);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int? id)
         {
-            switch (await bookService.Delete(id))
+            try
             {
-                case 0: return Ok("Запись удалена");
-                case 1: return NotFound("Запись не найдена");
-                default: return BadRequest("Неизвестная ошибка");
+                await bookService.Delete(id);
+                return Ok();
             }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+                throw;
+            }
+
         }
         [HttpPut("id")]
         public async Task<ActionResult> Update(int? id, BookLoanWithoutExternal bookLoanWithoutExternal, int? statusId, int? UserId, int? BookId)
         {
-            switch (await bookService.Update(bookLoanWithoutExternal,UserId, BookId, id))
+            try
             {
-                case 0: return Ok("Запись обновлена");
-                case 1: return NotFound("Запись не найдена");
-                default: return BadRequest("Неизвестная ошибка");
+                await bookService.Update(bookLoanWithoutExternal, UserId, BookId, id);
+                return Ok();
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
+            
         }
     }
 }

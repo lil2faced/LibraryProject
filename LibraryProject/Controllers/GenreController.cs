@@ -12,57 +12,82 @@ namespace LibraryProject.Controllers
     public class GenreController : ControllerBase
     {
         private readonly GenreService genreService;
-        public GenreController(GenreService genreService)
+        private readonly CancellationTokenSource _cts;
+        public GenreController(GenreService genreService, CancellationTokenSource cts)
         {
             this.genreService = genreService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Genre>>> Get()
+        public async Task<ActionResult<List<Genre>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await genreService.GetAllAsync());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await genreService.GetAllAsync(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Genre?>> Get(int? id)
+        public async Task<ActionResult<Genre>> Get(int? id, CancellationToken token)
         {
-            var gen = await genreService.GetByIdAsync(id);
-            if (gen.Item1 == 0)
-                return Ok(gen.Item2);
-            else
-                return NotFound("Жанр не найден");
+            token = _cts.Token;
+            try
+            {
+                return await genreService.GetByIdAsync(id, token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] Genre genre)
+        public async Task<ActionResult> PostAsync([FromBody] Genre genre, CancellationToken token)
         {
-            switch (await genreService.AddAsync(genre))
+            token = _cts.Token;
+            try
             {
-                case 0:
-                    return Ok("Жанр создан");
-                case 1:
-                    return BadRequest("Такой жанр уже существует");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await genreService.AddAsync(genre, token);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            switch (await genreService.DeleteByIdAsync(id))
+            try
             {
-                case 0:
-                    return Ok("Жанр удален");
-                case 1:
-                    return BadRequest("Ошибка. Жанр не найден");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await genreService.DeleteByIdAsync(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody] Genre genre)
         {
-            var result = await genreService.UpdateByIDAsync(id, genre);
-            if (result == 1)
-                return NotFound($"Жанр с ID {id} не найден");
-            return Ok("Жанр обновлен");
+            try
+            {
+                await genreService.UpdateByIDAsync(id, genre);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
     }
 }

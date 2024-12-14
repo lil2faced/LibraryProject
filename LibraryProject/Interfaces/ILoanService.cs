@@ -4,10 +4,10 @@ namespace LibraryProject.Interfaces
 {
     public interface ILoanService
     {
-        Task<int> Add(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId);
-        Task<(int, BookLoan?)> GetById(int? id);
-        Task<List<BookLoan>> Get();
-        Task<int> Delete(int? id);
-        Task<int> Update(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, int? id);
+        Task Add(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, CancellationToken cancellationToken);
+        Task<BookLoan> GetById(int? id, CancellationToken cancellationToken);
+        Task<List<BookLoan>> Get(CancellationToken cancellationToken);
+        Task Delete(int? id);
+        Task Update(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, int? id);
     }
 }

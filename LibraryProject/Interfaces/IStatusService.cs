@@ -4,10 +4,10 @@ namespace LibraryProject.Interfaces
 {
     public interface IStatusService
     {
-        Task<int> Add(Status status);
-        Task<List<Status>> GetAll();
-        Task<(int, Status?)> GetById(int? id);
-        Task<int> Update(int? id, Status status);
-        Task<int> Delete(int? id);
+        Task Add(Status status, CancellationToken cancellationToken);
+        Task<List<Status>> GetAll(CancellationToken cancellationToken);
+        Task<Status> GetById(int? id, CancellationToken cancellationToken);
+        Task Update(int? id, Status status);
+        Task Delete(int? id);
     }
 }

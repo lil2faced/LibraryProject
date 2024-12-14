@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             _db = databaseContext;
         }
-        public async Task<int> AddAsync(Series series)
+        public async Task AddAsync(Series series, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (series == null)
             {
                 throw new ArgumentNullException();
@@ -21,18 +25,25 @@ namespace LibraryProject.Services
             var series1 = await _db.BookSeries.Where(a => a.Name == series.Name).FirstOrDefaultAsync();
             if (series1 != null)
             {
-                return 1;
+                throw new Exception("Такая серия уже существует");
             }
             _db.BookSeries.Add(series);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<List<Series>> GetAllAsync()
+        public async Task<List<Series>> GetAllAsync(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await _db.BookSeries.ToListAsync();
         }
-        public async Task<(int, Series?)> GetByIdAsync(int? id)
+        public async Task<Series> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -40,35 +51,33 @@ namespace LibraryProject.Services
             var series = await _db.BookSeries.FindAsync(id);
             if (series == null)
             {
-                return (1, series);
+                throw new Exception("Серия не найдена");
             }
-            return (0, series);
+            return series;
         }
-        public async Task<int> DeleteByIdAsync(int? id)
+        public async Task DeleteByIdAsync(int? id)
         {
             if(id == null) throw new ArgumentNullException();
             var series = await _db.BookSeries.FindAsync(id);
             if (series == null)
             {
-                return 1;
+                throw new Exception("Серия не найдена");
             }
             _db.BookSeries.Remove(series);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> UpdateByIDAsync(int? id, Series ser)
+        public async Task UpdateByIDAsync(int? id, Series ser)
         {
             if (id == null || ser == null) throw new ArgumentNullException();
             var series = await _db.BookSeries.FindAsync(id);
             if (series == null)
             {
-                return 1;
+                throw new Exception("Серия не найдена");
             }
             series.Name = ser.Name;
             series.Description = ser.Description;
             _db.BookSeries.Update(series);
             await _db.SaveChangesAsync();
-            return 0;
         }
     }
 }

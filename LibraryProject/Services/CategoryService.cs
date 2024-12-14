@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             _db = databaseContext;
         }
-        public async Task<int> AddAsync(Category category)
+        public async Task AddAsync(Category category, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (category == null)
             {
                 throw new ArgumentNullException();
@@ -21,18 +25,25 @@ namespace LibraryProject.Services
             var category1 = await _db.Categories.Where(a => a.Name == category.Name).FirstOrDefaultAsync();
             if (category1 != null)
             {
-                return 1;
+                throw new Exception("Такая категория уже существует");
             }
             _db.Categories.Add(category);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>> GetAllAsync(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await _db.Categories.ToListAsync();
         }
-        public async Task<(int, Category?)> GetByIdAsync(int? id)
+        public async Task<Category> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -40,11 +51,11 @@ namespace LibraryProject.Services
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
             {
-                return (1, category);
+                throw new Exception("Категория не найдена");
             }
-            return (0, category);
+            return category;
         }
-        public async Task<int> DeleteByIdAsync(int? id)
+        public async Task DeleteByIdAsync(int? id)
         {
             if (id == null)
             {
@@ -53,13 +64,12 @@ namespace LibraryProject.Services
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
             {
-                return 1;
+                throw new Exception("Категория не найдена");
             }
             _db.Categories.Remove(category);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> UpdateByIDAsync(int? id, Category cat)
+        public async Task UpdateByIDAsync(int? id, Category cat)
         {
             if (id == null || cat == null)
             {
@@ -68,12 +78,11 @@ namespace LibraryProject.Services
             var category = await _db.Categories.FindAsync(id);
             if (category == null)
             {
-                return 1;
+                throw new Exception("Категория не найдена");
             }
             category.Name = cat.Name;
             _db.Categories.Update(category);
             await _db.SaveChangesAsync();
-            return 0;
         }
     }
 }

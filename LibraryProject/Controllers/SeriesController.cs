@@ -11,57 +11,86 @@ namespace LibraryProject.Controllers
     public class SeriesController : ControllerBase
     {
         private readonly SeriesService seriesService;
-        public SeriesController(SeriesService seriesService)
+        private readonly CancellationTokenSource _cts;
+        public SeriesController(SeriesService seriesService, CancellationTokenSource cts)
         {
             this.seriesService = seriesService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Series>>> Get()
+        public async Task<ActionResult<List<Series>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await seriesService.GetAllAsync());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await seriesService.GetAllAsync(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Series?>> Get(int? id)
+        public async Task<ActionResult<Series?>> Get(int? id, CancellationToken token)
         {
-            var ser = await seriesService.GetByIdAsync(id);
-            if (ser.Item1 == 0)
-                return Ok(ser.Item2);
-            else
-                return NotFound("Серия не найдена");
+            token = _cts.Token;
+            try
+            {
+                await seriesService.GetByIdAsync(id, token);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] Series series)
+        public async Task<ActionResult> PostAsync([FromBody] Series series, CancellationToken token)
         {
-            switch (await seriesService.AddAsync(series))
+            token = _cts.Token;
+            
+            try
             {
-                case 0:
-                    return Ok("Серия книг создана");
-                case 1:
-                    return BadRequest("Такая серия книг уже существует");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await seriesService.AddAsync(series, token);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            switch (await seriesService.DeleteByIdAsync(id))
+            
+            try
             {
-                case 0:
-                    return Ok("Серия удалена");
-                case 1:
-                    return BadRequest("Ошибка. Серия не найдена");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await seriesService.DeleteByIdAsync(id);
+                return Ok();
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
+
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody] Series series)
         {
-            var result = await seriesService.UpdateByIDAsync(id, series);
-            if (result == 1)
-                return NotFound($"Серия с ID {id} не найдена");
-            return Ok("Серия обновлена");
+            try
+            {
+                await seriesService.UpdateByIDAsync(id, series);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
     }
 }

@@ -12,54 +12,83 @@ namespace LibraryProject.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserDatabaseSevice userService;
-        public UserController(UserDatabaseSevice userService)
+        private readonly CancellationTokenSource _cts;
+        public UserController(UserDatabaseSevice userService, CancellationTokenSource cts)
         {
             this.userService = userService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<User>>> Get()
+        public async Task<ActionResult<List<User>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await userService.GetAll());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await userService.GetAll(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<User?>> GetById(int? id)
+        public async Task<ActionResult<User?>> GetById(int? id, CancellationToken token)
         {
-            var res = await userService.Get(id);
-            if (res.Item1 == 1)
+            token = _cts.Token;
+            try
             {
-                return NotFound("Пользователь не найден");
+                await userService.Get(id, token);
+                return Ok();
             }
-            return Ok(res.Item2);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int? id)
         {
-            int res = await userService.DeleteById(id);
-            if (res == 0)
+            try
             {
-                return Ok("Пользователь удален");
+                await userService.DeleteById(id);
+                return Ok();
             }
-            return NotFound("Пользователь не найден");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] UserWithoutExternal user)
+        public async Task<ActionResult> Add([FromBody] UserWithoutExternal user, CancellationToken token)
         {
-            int res = await userService.Add(user);
-            if (res == 1)
+            token = _cts.Token;
+            try
             {
-                return BadRequest("Такой пользователь уже есть");
+                await userService.Add(user, token);
+                return Ok();
             }
-            return Ok("Пользователь создан");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int? id, [FromBody] User user)
         {
-            int res = await userService.Update(id, user);
-            if (res == 1)
+            try
             {
-                return BadRequest("Такого пользователя нету");
+                await userService.Update(id, user);
+                return Ok();
             }
-            return Ok("Пользователь обновлён");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
 
 

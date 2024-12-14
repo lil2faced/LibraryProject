@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             _db = databaseContext;
         }
-        public async Task<int> AddAsync(Genre genre)
+        public async Task AddAsync(Genre genre, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (genre == null)
             {
                 throw new ArgumentNullException();
@@ -21,18 +25,25 @@ namespace LibraryProject.Services
             var genre1 = await _db.Genres.Where(a => a.Name == genre.Name).FirstOrDefaultAsync();
             if (genre1 != null)
             {
-                return 1;
+                throw new Exception("Жанр не найден");
             }
             _db.Genres.Add(genre);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<List<Genre>> GetAllAsync()
+        public async Task<List<Genre>> GetAllAsync(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await _db.Genres.ToListAsync();
         }
-        public async Task<(int, Genre?)> GetByIdAsync(int? id)
+        public async Task<Genre> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -40,11 +51,11 @@ namespace LibraryProject.Services
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
             {
-                return (1, genre);
+                throw new Exception("Жанр не найден");
             }
-            return (0, genre);
+            return genre;
         }
-        public async Task<int> DeleteByIdAsync(int? id)
+        public async Task DeleteByIdAsync(int? id)
         {
             if (id == null)
             {
@@ -53,13 +64,12 @@ namespace LibraryProject.Services
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
             {
-                return 1;
+                throw new Exception("Жанр не найден");
             }
             _db.Genres.Remove(genre);
             await _db.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> UpdateByIDAsync(int? id, Genre gen)
+        public async Task UpdateByIDAsync(int? id, Genre gen)
         {
             if (id == null || gen == null)
             {
@@ -68,12 +78,11 @@ namespace LibraryProject.Services
             var genre = await _db.Genres.FindAsync(id);
             if (genre == null)
             {
-                return 1;
+                throw new Exception("Жанр не найден");
             }
             genre.Name = gen.Name;
             _db.Genres.Update(genre);
             await _db.SaveChangesAsync();
-            return 0;
         }
     }
 }

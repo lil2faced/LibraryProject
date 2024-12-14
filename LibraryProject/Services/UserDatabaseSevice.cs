@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<(int, User?)> Get(int? id)
+        public async Task<User> Get(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -21,17 +25,25 @@ namespace LibraryProject.Services
             var user = await databaseContext.Users.FindAsync(id);
             if (user == null)
             {
-                return (1, new());
+                throw new Exception("Пользователь не найден");
             }
-            return (0, user);
+            return user;
         }
-        public async Task<List<User>> GetAll()
+        public async Task<List<User>> GetAll(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             var users = await databaseContext.Users.ToListAsync();
             return users;
         }
-        public async Task<int> Add(UserWithoutExternal user)
+        public async Task Add(UserWithoutExternal user, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (user == null)
             {
                 throw new ArgumentNullException();
@@ -39,7 +51,7 @@ namespace LibraryProject.Services
             var us = await databaseContext.Users.Where(u => u.PhoneNumber == user.PhoneNumber).FirstOrDefaultAsync();
             if (us != null)
             {
-                return 1;
+                throw new Exception("Пользователь с таким номером телефона уже существует");
             }
             User u = new()
             {
@@ -50,9 +62,8 @@ namespace LibraryProject.Services
             };
             await databaseContext.Users.AddAsync(u);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> DeleteById(int? id)
+        public async Task DeleteById(int? id)
         {
             if (id == null)
             {
@@ -61,26 +72,24 @@ namespace LibraryProject.Services
             var user = await databaseContext.Users.FindAsync(id);
             if (user == null)
             {
-                return 1;
+                throw new Exception("Пользователь не найден");
             }
             databaseContext.Users.Remove(user);
             await databaseContext.SaveChangesAsync();
-            return 0;
         } 
-        public async Task<int> Update(int? id, User user)
+        public async Task Update(int? id, User user)
         {
             if (user == null || id == null) throw new ArgumentNullException();
             var u = await databaseContext.Users.FindAsync(id);
-            if (user == null || u == null)
+            if (u == null)
             {
-                return 1;
+                throw new Exception("Пользователь не найден");
             }
             u.Surname = user.Surname;
             u.Adress = user.Adress;
             u.PhoneNumber = user.PhoneNumber;
             databaseContext.Users.Update(u);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
     }
 }

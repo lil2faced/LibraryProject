@@ -5,10 +5,10 @@ namespace LibraryProject.Interfaces
 {
     public interface IOrderService
     {
-        Task<int> Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId);
-        Task<(int, BookPurchaseOrder?)> GetById(int? id);
-        Task<List<BookPurchaseOrder>> Get();
-        Task<int> Delete(int? id);
-        Task<int> Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id);
+        Task Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, CancellationToken cancellationToken);
+        Task<BookPurchaseOrder> GetById(int? id, CancellationToken cancellationToken);
+        Task<List<BookPurchaseOrder>> Get(CancellationToken cancellationToken);
+        Task Delete(int? id);
+        Task Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id);
     }
 }

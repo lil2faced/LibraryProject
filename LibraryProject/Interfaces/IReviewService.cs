@@ -4,10 +4,10 @@ namespace LibraryProject.Interfaces
 {
     public interface IReviewService
     {
-        Task<int> AddAsync(int? BookId, ReviewWithoutExternal reviewWithout);
-        Task<List<Review>> GetAllReviews();
-        Task<Review?> GetReviewById(int? id);
-        Task<int> DeleteReviewById(int? id);
-        Task<int> UpdateReview(int? id, ReviewWithoutExternal rev);
+        Task AddAsync(int? BookId, ReviewWithoutExternal reviewWithout, CancellationToken cancellationToken);
+        Task<List<Review>> GetAllReviews(CancellationToken cancellationToken);
+        Task<Review?> GetReviewById(int? id, CancellationToken cancellationToken);
+        Task DeleteReviewById(int? id);
+        Task UpdateReview(int? id, ReviewWithoutExternal rev);
     }
 }

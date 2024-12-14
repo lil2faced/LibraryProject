@@ -16,8 +16,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> AddAsync(int? BookId, ReviewWithoutExternal reviewWithout)
+        public async Task AddAsync(int? BookId, ReviewWithoutExternal reviewWithout, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (BookId == null || reviewWithout == null)
             {
                 throw new ArgumentNullException();
@@ -25,7 +29,7 @@ namespace LibraryProject.Services
             var book = await databaseContext.Books.FindAsync(BookId);
             if (book == null)
             {
-                return 1;
+                throw new Exception("Книга не найдена");
             }
 
             Review review = new Review()
@@ -41,15 +45,21 @@ namespace LibraryProject.Services
             book.Reviews.Add(review);
 
             await databaseContext.SaveChangesAsync();
-
-            return 0;
         }
-        public async Task<List<Review>> GetAllReviews()
+        public async Task<List<Review>> GetAllReviews(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await databaseContext.Reviews.ToListAsync();
         }
-        public async Task<Review?> GetReviewById(int? id)
+        public async Task<Review?> GetReviewById(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -57,31 +67,29 @@ namespace LibraryProject.Services
             var review = await databaseContext.Reviews.FindAsync(id);
             return review;
         }
-        public async Task<int> DeleteReviewById(int? id)
+        public async Task DeleteReviewById(int? id)
         {
             if (id == null) throw new ArgumentNullException();
             var review = await databaseContext.Reviews.FindAsync(id);
             if (review == null)
             {
-                return 1;
+                throw new Exception("Отзыв не найден");
             }
             databaseContext.Reviews.Remove(review);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> UpdateReview(int? id, ReviewWithoutExternal rev)
+        public async Task UpdateReview(int? id, ReviewWithoutExternal rev)
         {
             if (id == null || rev == null) throw new ArgumentNullException();
             var review = await databaseContext.Reviews.FindAsync(id);
             if (review == null)
             {
-                return 1;
+                throw new Exception("Отзыв не найден");
             }
             review.DateReview = rev.DateReview;
             review.BodyReview = rev.BodyReview;
             databaseContext.Reviews.Update(review);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
     }
 }

@@ -11,54 +11,87 @@ namespace LibraryProject.Controllers
     public class ReviewController : ControllerBase
     {
         private readonly ReviewService reviewService;
-        public ReviewController(ReviewService reviewService)
+        private readonly CancellationTokenSource _cts;
+        public ReviewController(ReviewService reviewService, CancellationTokenSource cts)
         {
             this.reviewService = reviewService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Review>>> GetByBookId()
+        public async Task<ActionResult<List<Review>>> GetByBookId(CancellationToken cancellationToken)
         {
-            return Ok(await reviewService.GetAllReviews());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await reviewService.GetAllReviews(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Review>> Get(int? id)
+        public async Task<ActionResult<Review>> Get(int? id, CancellationToken token)
         {
-            var res = await reviewService.GetReviewById(id);
-            if (res == null)
+            token = _cts.Token;
+            try
             {
-                return BadRequest("Такого отзыва нету");
+                await reviewService.GetReviewById(id, token);
+                return Ok();
             }
-            return Ok(res);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult<int>> Add(int? bookId, [FromBody]ReviewWithoutExternal reviewWithoutExternal)
+        public async Task<ActionResult> Add(int? bookId, [FromBody]ReviewWithoutExternal reviewWithoutExternal, CancellationToken token)
         {
-            int res = await reviewService.AddAsync(bookId, reviewWithoutExternal);
-            if (res == 1)
+            token = _cts.Token;
+            try
             {
-                return BadRequest("Книга с таким Id не найдена");
+                await reviewService.AddAsync(bookId, reviewWithoutExternal, token);
+                return Ok();
             }
-            return Ok("Создание успешно");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int? id)
         {
-            var res = await reviewService.DeleteReviewById(id);
-            if (res == 1)
+            try
             {
-                return NotFound("Отзыв не найден");
+                await reviewService.DeleteReviewById(id);
+                return Ok();
             }
-            return Ok("Отзыв удалён");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
+            
+            
         }
         [HttpPut]
         public async Task<ActionResult> Update(int? id, [FromBody] ReviewWithoutExternal reviewWithoutExternal)
         {
-            var res = await reviewService.UpdateReview(id, reviewWithoutExternal);
-            if (res == 1)
+            try
             {
-                return NotFound("Отзыв не найден");
+                await reviewService.UpdateReview(id, reviewWithoutExternal);
+                return Ok();
             }
-            return Ok("Отзыв обновлён");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
+
+
         }
 
     }

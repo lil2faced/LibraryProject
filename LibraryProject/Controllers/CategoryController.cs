@@ -3,6 +3,7 @@ using LibraryProject.Entities.BookProps;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace LibraryProject.Controllers
 {
@@ -11,57 +12,84 @@ namespace LibraryProject.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly CategoryService categoryService;
-        public CategoryController(CategoryService categoryService)
+        private readonly CancellationTokenSource _cts;
+        public CategoryController(CategoryService categoryService, CancellationTokenSource cts)
         {
             this.categoryService = categoryService;
+            _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> Get()
+        public async Task<ActionResult<List<Category>>> Get(CancellationToken cancellationToken)
         {
-            return Ok(await categoryService.GetAllAsync());
+            cancellationToken = _cts.Token;
+            try
+            {
+                return Ok(await categoryService.GetAllAsync(cancellationToken));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category?>> Get(int? id)
+        public async Task<ActionResult<Category?>> Get(int? id, CancellationToken token)
         {
-            var res = await categoryService.GetByIdAsync(id);
-            if (res.Item1 == 0)
-                return Ok(res.Item2);
-            else
-                return NotFound("Категория не найдена");
+            token = _cts.Token;
+            try
+            {
+                return Ok(await categoryService.GetByIdAsync(id, token));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] Category category)
+        public async Task<ActionResult> PostAsync([FromBody] Category category, CancellationToken token)
         {
-            switch (await categoryService.AddAsync(category))
+            token = _cts.Token;
+            
+            try
             {
-                case 0:
-                    return Ok("Категория создана");
-                case 1:
-                    return BadRequest("Такая категория уже существует");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await categoryService.AddAsync(category, token);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
             }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            switch (await categoryService.DeleteByIdAsync(id))
+            try
             {
-                case 0:
-                    return Ok("Категория удалена");
-                case 1:
-                    return BadRequest("Категория не найдена");
-                default:
-                    return BadRequest("Неизвестная ошибка");
+                await categoryService.DeleteByIdAsync(id);
+                return Ok();
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
+
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody] Category category)
         {
-            var result = await categoryService.UpdateByIDAsync(id, category);
-            if (result == 1)
-                return NotFound($"Категория с ID {id} не найдена");
-            return Ok("Категория обновлена");
+            try
+            {
+                await categoryService.UpdateByIDAsync(id, category);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
         }
 
     }

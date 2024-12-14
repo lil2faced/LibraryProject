@@ -12,8 +12,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> Add(Status status)
+        public async Task Add(Status status, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (status == null)
             {
                 throw new ArgumentNullException();
@@ -21,18 +25,25 @@ namespace LibraryProject.Services
             var temp = await databaseContext.Statuses.Where(s => s.Name == status.Name).FirstOrDefaultAsync();
             if (temp != null)
             {
-                return 1;
+                throw new Exception("Такой статус уже существует");
             }
             await databaseContext.Statuses.AddAsync(status);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<List<Status>> GetAll()
+        public async Task<List<Status>> GetAll(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await databaseContext.Statuses.ToListAsync();
         }
-        public async Task<(int,Status?)> GetById(int? id)
+        public async Task<Status> GetById(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -40,24 +51,23 @@ namespace LibraryProject.Services
             var status = await databaseContext.Statuses.FindAsync(id);
             if (status == null)
             {
-                return (1, null);
+                throw new Exception("Статус не найден");
             }
-            return (0, status);
+            return status;
         }
-        public async Task<int> Update(int? id, Status status)
+        public async Task Update(int? id, Status status)
         {
             if (id == null || status == null) throw new ArgumentNullException();
             var temp = databaseContext.Statuses.Find(id);
             if (temp == null)
             {
-                return 1;
+                throw new Exception("Статус не найден");
             }
             temp.Name = status.Name;
             databaseContext.Statuses.Update(temp);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> Delete(int? id)
+        public async Task Delete(int? id)
         {
             if (id == null)
             {
@@ -66,11 +76,10 @@ namespace LibraryProject.Services
                 var temp = databaseContext.Statuses.Find(id);
             if (temp == null)
             {
-                return 1;
+                throw new Exception("Статус не найден");
             }
             databaseContext.Remove(temp);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
     }
 }

@@ -13,8 +13,12 @@ namespace LibraryProject.Services
         {
             this.databaseContext = databaseContext;
         }
-        public async Task<int> Add(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId)
+        public async Task Add(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (bookLoanWithoutExternal == null || UserId == null || BookId == null)
             {
                 throw new ArgumentNullException();
@@ -23,7 +27,7 @@ namespace LibraryProject.Services
             var user = await databaseContext.Users.FindAsync(UserId);
             if (book == null || user == null)
             {
-                return 1;
+                throw new Exception("Связанные свойства не найдены");
             }
             BookLoan bookLoan = new()
             {
@@ -36,10 +40,13 @@ namespace LibraryProject.Services
             };
             await databaseContext.BookLoans.AddAsync(bookLoan);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<(int, BookLoan?)> GetById(int? id)
+        public async Task<BookLoan> GetById(int? id, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             if (id == null)
             {
                 throw new ArgumentNullException();
@@ -50,17 +57,21 @@ namespace LibraryProject.Services
                 .FirstOrDefaultAsync();
             if (temp == null)
             {
-                return (1, null);
+                throw new Exception("Запись не найдена");
             }
-            return (0, temp);
+            return temp;
         }
-        public async Task<List<BookLoan>> Get()
+        public async Task<List<BookLoan>> Get(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
+            }
             return await databaseContext.BookLoans
                 .Include(b => b.User)
                 .ToListAsync();
         }
-        public async Task<int> Delete(int? id)
+        public async Task Delete(int? id)
         {
             if (id == null)
             {
@@ -69,26 +80,25 @@ namespace LibraryProject.Services
             var loan = await databaseContext.BookLoans.FindAsync(id);
             if (loan == null)
             {
-                return 1;
+                throw new Exception("Запись не найдена");
             }
             databaseContext.BookLoans.Remove(loan);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
-        public async Task<int> Update(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, int? id)
+        public async Task Update(BookLoanWithoutExternal bookLoanWithoutExternal, int? UserId, int? BookId, int? id)
         {
             if (UserId == null || BookId == null || id == null || bookLoanWithoutExternal == null)
             {
                 throw new ArgumentNullException();
             }
             var temp = await databaseContext.BookLoans.FindAsync(id);
-            if (temp == null) return 1;
+            if (temp == null) throw new Exception("Запись не найдена");
 
             var book = await databaseContext.Books.FindAsync(BookId);
             var user = await databaseContext.Users.FindAsync(UserId);
             if (book == null || user == null)
             {
-                return 1;
+                throw new Exception("Связанные свойства не найдены");
             }
             BookLoan loan = new()
             {
@@ -101,7 +111,6 @@ namespace LibraryProject.Services
             };
             databaseContext.BookLoans.Update(loan);
             await databaseContext.SaveChangesAsync();
-            return 0;
         }
     }
 }

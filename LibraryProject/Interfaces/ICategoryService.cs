@@ -4,11 +4,11 @@ namespace LibraryProject.Interfaces
 {
     public interface ICategoryService
     {
-        Task<int> AddAsync(Category category);
-        Task<List<Category>> GetAllAsync();
-        Task<(int, Category?)> GetByIdAsync(int? id);
-        Task<int> DeleteByIdAsync(int? id);
-        Task<int> UpdateByIDAsync(int? id, Category cat);
+        Task AddAsync(Category category, CancellationToken cancellationToken);
+        Task<List<Category>> GetAllAsync(CancellationToken cancellationToken);
+        Task<Category> GetByIdAsync(int? id, CancellationToken cancellationToken);
+        Task DeleteByIdAsync(int? id);
+        Task UpdateByIDAsync(int? id, Category cat);
 
     }
 }
