@@ -1,13 +1,14 @@
-﻿using LibraryProject.Entities.BookProps;
+﻿using LibraryProject.ControllerModels;
+using LibraryProject.Entities.BookProps;
 
 namespace LibraryProject.Interfaces
 {
     public interface IGenreService
     {
-        Task AddAsync(Genre genre, CancellationToken cancellationToken);
-        Task<List<Genre>> GetAllAsync(CancellationToken cancellationToken);
-        Task<Genre> GetByIdAsync(int? id, CancellationToken cancellationToken);
+        Task AddAsync(GenreModel genre, CancellationToken cancellationToken);
+        Task<List<GenreModel>> GetAllAsync(CancellationToken cancellationToken);
+        Task<GenreModel> GetByIdAsync(int? id, CancellationToken cancellationToken);
         Task DeleteByIdAsync(int? id);
-        Task UpdateByIDAsync(int? id, Genre gen);
+        Task UpdateByIDAsync(int? id, GenreModel gen);
     }
 }

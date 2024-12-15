@@ -1,4 +1,5 @@
-﻿using LibraryProject.Applications;
+﻿using AutoMapper;
+using LibraryProject.Applications;
 using LibraryProject.Entities.EntityRewiev;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;

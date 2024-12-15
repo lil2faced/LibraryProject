@@ -1,13 +1,13 @@
-﻿using LibraryProject.Entities.BookProps;
+﻿using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Interfaces
 {
     public interface ISeriesService
     {
-        Task AddAsync(Series series, CancellationToken cancellationToken);
-        Task<List<Series>> GetAllAsync(CancellationToken cancellationToken);
-        Task<Series> GetByIdAsync(int? id, CancellationToken cancellationToken);
+        Task AddAsync(SeriesModel series, CancellationToken cancellationToken);
+        Task<List<SeriesModel>> GetAllAsync(CancellationToken cancellationToken);
+        Task<SeriesModel> GetByIdAsync(int? id, CancellationToken cancellationToken);
         Task DeleteByIdAsync(int? id);
-        Task UpdateByIDAsync(int? id, Series ser);
+        Task UpdateByIDAsync(int? id, SeriesModel ser);
     }
 }

@@ -1,4 +1,5 @@
-﻿using LibraryProject.Applications;
+﻿using AutoMapper;
+using LibraryProject.Applications;
 using LibraryProject.Entities;
 using LibraryProject.Entities.Orders;
 using LibraryProject.Services;

@@ -1,4 +1,6 @@
-﻿using LibraryProject.Applications;
+﻿using AutoMapper;
+using LibraryProject.Applications;
+using LibraryProject.ControllerModels;
 using LibraryProject.Entities.BookProps;
 using LibraryProject.Entities.EntityBook;
 using LibraryProject.Services;
@@ -20,7 +22,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<BookAuthor>>> GetAsync(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<AuthorModel>>> GetAsync(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -34,7 +36,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookAuthor>> GetAsync(int? id, CancellationToken cancellationToken)
+        public async Task<ActionResult<AuthorModel>> GetAsync(int? id, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -48,7 +50,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] BookAuthor? author, CancellationToken cancellationToken)
+        public async Task<ActionResult> PostAsync([FromBody] AuthorModel? author, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -78,7 +80,7 @@ namespace LibraryProject.Controllers
             
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id, [FromBody]BookAuthor bookAuthor)
+        public async Task<IActionResult> Update(int? id, [FromBody]AuthorModel bookAuthor)
         {
             try
             {

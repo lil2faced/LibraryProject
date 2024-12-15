@@ -8,6 +8,7 @@ namespace LibraryProject.Entities.BookProps
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; } = null!;
         [JsonIgnore]
         public List<Book> Books { get; set; } = new();

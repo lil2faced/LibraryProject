@@ -2,18 +2,23 @@
 using LibraryProject.Entities.BookProps;
 using Microsoft.EntityFrameworkCore;
 using LibraryProject.Interfaces;
+using AutoMapper;
+using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Services
 {
     public class AuthorService : IAuthorService
     {
         private readonly DatabaseContext _db;
-        public AuthorService(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public AuthorService(DatabaseContext databaseContext, IMapper mapper)
         {
+            _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddAuthorAsync(BookAuthor? author, CancellationToken cancellationToken)
+        public async Task AddAuthorAsync(AuthorModel? author, CancellationToken cancellationToken)
         {
+            var mappedAuthor = _mapper.Map<BookAuthor>(author);
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
@@ -27,18 +32,20 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Автор не найден");
             }
-            _db.BookAuthors.Add(author);
+            _db.BookAuthors.Add(mappedAuthor);            
             await _db.SaveChangesAsync();
         }
-        public async Task<List<BookAuthor>> GetAllAuthorsAsync(CancellationToken cancellationToken)
+        public async Task<List<AuthorModel>> GetAllAuthorsAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await _db.BookAuthors.ToListAsync(cancellationToken);
+            return await _db.BookAuthors
+                .Select(a => _mapper.Map<AuthorModel>(a))
+                .ToListAsync();
         }
-        public async Task<BookAuthor> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<AuthorModel> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -48,12 +55,13 @@ namespace LibraryProject.Services
             {
                 throw new ArgumentNullException("На входе пришел NULL");
             }
+
             var author = await _db.BookAuthors.FindAsync(id, cancellationToken);
             if (author == null)
             {
                 throw new Exception("Автор не найден");
             }
-            return author;
+            return _mapper.Map<AuthorModel>(author);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -69,8 +77,9 @@ namespace LibraryProject.Services
             _db.BookAuthors.Remove(author);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, BookAuthor aut)
+        public async Task UpdateByIDAsync(int? id, AuthorModel aut)
         {
+            _mapper.Map<BookAuthor>(aut);
             if (id == null || aut == null)
             {
                 throw new ArgumentNullException("На входе пришел NULL");

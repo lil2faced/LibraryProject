@@ -2,17 +2,21 @@
 using LibraryProject.Entities.BookProps;
 using Microsoft.EntityFrameworkCore;
 using LibraryProject.Interfaces;
+using LibraryProject.ControllerModels;
+using AutoMapper;
 
 namespace LibraryProject.Services
 {
     public class SeriesService : ISeriesService
     {
         private readonly DatabaseContext _db;
-        public SeriesService(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public SeriesService(DatabaseContext databaseContext, IMapper mapper)
         {
+            _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddAsync(Series series, CancellationToken cancellationToken)
+        public async Task AddAsync(SeriesModel series, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -27,18 +31,18 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Такая серия уже существует");
             }
-            _db.BookSeries.Add(series);
+            _db.BookSeries.Add(_mapper.Map<Series>(series));
             await _db.SaveChangesAsync();
         }
-        public async Task<List<Series>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<List<SeriesModel>> GetAllAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await _db.BookSeries.ToListAsync();
+            return await _db.BookSeries.Select(a => _mapper.Map<SeriesModel>(a)).ToListAsync();
         }
-        public async Task<Series> GetByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<SeriesModel> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -53,7 +57,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Серия не найдена");
             }
-            return series;
+            return _mapper.Map<SeriesModel>(series);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -66,7 +70,7 @@ namespace LibraryProject.Services
             _db.BookSeries.Remove(series);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, Series ser)
+        public async Task UpdateByIDAsync(int? id, SeriesModel ser)
         {
             if (id == null || ser == null) throw new ArgumentNullException();
             var series = await _db.BookSeries.FindAsync(id);
@@ -76,7 +80,7 @@ namespace LibraryProject.Services
             }
             series.Name = ser.Name;
             series.Description = ser.Description;
-            _db.BookSeries.Update(series);
+            _db.BookSeries.Update(_mapper.Map<Series>(series));
             await _db.SaveChangesAsync();
         }
     }

@@ -1,4 +1,6 @@
-﻿using LibraryProject.Applications;
+﻿using AutoMapper;
+using LibraryProject.Applications;
+using LibraryProject.ControllerModels;
 using LibraryProject.Entities.BookProps;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +21,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<CategoryModel>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -33,7 +35,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category?>> Get(int? id, CancellationToken token)
+        public async Task<ActionResult<CategoryModel>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -47,7 +49,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] Category category, CancellationToken token)
+        public async Task<ActionResult> PostAsync([FromBody] CategoryModel category, CancellationToken token)
         {
             token = _cts.Token;
             
@@ -78,7 +80,7 @@ namespace LibraryProject.Controllers
 
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id, [FromBody] Category category)
+        public async Task<IActionResult> Update(int? id, [FromBody] CategoryModel category)
         {
             try
             {

@@ -2,43 +2,50 @@
 using LibraryProject.Entities.BookProps;
 using Microsoft.EntityFrameworkCore;
 using LibraryProject.Interfaces;
+using AutoMapper;
+using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Services
 {
     public class CategoryService : ICategoryService
     {
         private readonly DatabaseContext _db;
-        public CategoryService(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public CategoryService(DatabaseContext databaseContext, IMapper mapper)
         {
+            _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddAsync(Category category, CancellationToken cancellationToken)
+        public async Task AddAsync(CategoryModel category, CancellationToken cancellationToken)
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw new OperationCanceledException("Операция отменена");
-            }
             if (category == null)
             {
                 throw new ArgumentNullException();
+            }
+            var res = _mapper.Map<Category>(category);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException("Операция отменена");
             }
             var category1 = await _db.Categories.Where(a => a.Name == category.Name).FirstOrDefaultAsync();
             if (category1 != null)
             {
                 throw new Exception("Такая категория уже существует");
             }
-            _db.Categories.Add(category);
+            _db.Categories.Add(res);
             await _db.SaveChangesAsync();
         }
-        public async Task<List<Category>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<List<CategoryModel>> GetAllAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await _db.Categories.ToListAsync();
+            return await _db.Categories
+                .Select(a => _mapper.Map<CategoryModel>(a))
+                .ToListAsync();
         }
-        public async Task<Category> GetByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<CategoryModel> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -53,7 +60,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Категория не найдена");
             }
-            return category;
+            return _mapper.Map<CategoryModel>(category);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -69,7 +76,7 @@ namespace LibraryProject.Services
             _db.Categories.Remove(category);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, Category cat)
+        public async Task UpdateByIDAsync(int? id, CategoryModel cat)
         {
             if (id == null || cat == null)
             {
