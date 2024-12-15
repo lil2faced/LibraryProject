@@ -1,14 +1,14 @@
 ﻿using LibraryProject.Applications;
-using LibraryProject.Entities.Orders;
+using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Interfaces
 {
     public interface IOrderService
     {
-        Task Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, CancellationToken cancellationToken);
-        Task<BookPurchaseOrder> GetById(int? id, CancellationToken cancellationToken);
-        Task<List<BookPurchaseOrder>> Get(CancellationToken cancellationToken);
+        Task Add(OrderDTOParent bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, CancellationToken cancellationToken);
+        Task<OrderDTOChild> GetById(int? id, CancellationToken cancellationToken);
+        Task<List<OrderDTOChild>> Get(CancellationToken cancellationToken);
         Task Delete(int? id);
-        Task Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id);
+        Task Update(OrderDTOParent bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id);
     }
 }

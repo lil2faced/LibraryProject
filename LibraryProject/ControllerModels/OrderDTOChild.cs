@@ -6,13 +6,16 @@ using System.Text.Json.Serialization;
 
 namespace LibraryProject.ControllerModels
 {
-    public class OrderModel
+    public class OrderDTOChild : OrderDTOParent
     {
         public int BookId { get; set; }
-        public BookModel Book { get; set; }
+        [JsonIgnore]
+        public BookDTOChild Book { get; set; }
+        [JsonIgnore]
         public int UserId { get; set; }
-        public UserModel User { get; set; }
+        public UserDTOChild User { get; set; }
+        [JsonIgnore]
         public int StatusId { get; set; }
-        public StatusModel Status { get; set; }
+        public StatusDTO Status { get; set; }
     }
 }

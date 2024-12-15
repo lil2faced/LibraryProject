@@ -6,17 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using LibraryProject.Interfaces;
+using AutoMapper;
+using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Services
 {
     public class ReviewService : IReviewService
     {
         private readonly DatabaseContext databaseContext;
-        public ReviewService(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public ReviewService(DatabaseContext databaseContext, IMapper mapper)
         {
+            _mapper = mapper;
             this.databaseContext = databaseContext;
         }
-        public async Task AddAsync(int? BookId, ReviewWithoutExternal reviewWithout, CancellationToken cancellationToken)
+        public async Task AddAsync(int? BookId, ReviewDTOParent reviewWithout, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -46,15 +50,15 @@ namespace LibraryProject.Services
 
             await databaseContext.SaveChangesAsync();
         }
-        public async Task<List<Review>> GetAllReviews(CancellationToken cancellationToken)
+        public async Task<List<ReviewDTOChild>> GetAllReviews(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await databaseContext.Reviews.ToListAsync();
+            return await databaseContext.Reviews.Select(p => _mapper.Map<ReviewDTOChild>(p)).ToListAsync();
         }
-        public async Task<Review?> GetReviewById(int? id, CancellationToken cancellationToken)
+        public async Task<ReviewDTOChild> GetReviewById(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -65,7 +69,7 @@ namespace LibraryProject.Services
                 throw new ArgumentNullException();
             }
             var review = await databaseContext.Reviews.FindAsync(id);
-            return review;
+            return _mapper.Map<ReviewDTOChild>(review);
         }
         public async Task DeleteReviewById(int? id)
         {
@@ -78,7 +82,7 @@ namespace LibraryProject.Services
             databaseContext.Reviews.Remove(review);
             await databaseContext.SaveChangesAsync();
         }
-        public async Task UpdateReview(int? id, ReviewWithoutExternal rev)
+        public async Task UpdateReview(int? id, ReviewDTOParent rev)
         {
             if (id == null || rev == null) throw new ArgumentNullException();
             var review = await databaseContext.Reviews.FindAsync(id);

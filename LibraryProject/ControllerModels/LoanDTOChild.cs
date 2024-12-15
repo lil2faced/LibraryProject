@@ -5,11 +5,13 @@ using System.Text.Json.Serialization;
 
 namespace LibraryProject.ControllerModels
 {
-    public class LoanModel
+    public class LoanDTOChild : LoanDTOParent
     {
         public int BookId { get; set; }
-        public BookModel Book { get; set; }
+        [JsonIgnore]
+        public BookDTOChild Book { get; set; }
+        [JsonIgnore]
         public int UserId { get; set; }
-        public UserModel User { get; set; }
+        public UserDTOChild User { get; set; }
     }
 }

@@ -6,10 +6,10 @@ namespace LibraryProject.Interfaces
 {
     public interface IAuthorService
     {
-        Task AddAuthorAsync(AuthorModel? author, CancellationToken cancellationToken);
-        Task<List<AuthorModel>> GetAllAuthorsAsync(CancellationToken cancellationToken);
-        Task<AuthorModel> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken);
+        Task AddAuthorAsync(AuthorDTO? author, CancellationToken cancellationToken);
+        Task<List<AuthorDTO>> GetAllAuthorsAsync(CancellationToken cancellationToken);
+        Task<AuthorDTO> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken);
         Task DeleteByIdAsync(int? id);
-        Task UpdateByIDAsync(int? id, AuthorModel aut);
+        Task UpdateByIDAsync(int? id, AuthorDTO aut);
     }
 }

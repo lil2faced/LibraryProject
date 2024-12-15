@@ -1,5 +1,6 @@
-﻿using LibraryProject.Applications;
-
+﻿using AutoMapper;
+using LibraryProject.Applications;
+using LibraryProject.ControllerModels;
 using LibraryProject.Entities.EntityBook;
 using LibraryProject.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,13 @@ namespace LibraryProject.Services
     public class BookService : IBookService
     {
         private readonly DatabaseContext _db;
-        public BookService(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public BookService(DatabaseContext databaseContext, IMapper mapper)
         {
+            _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddBookAsync(int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook, CancellationToken cancellationToken)
+        public async Task AddBookAsync(int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookDTOParent WithoutExternalBook, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -60,15 +63,15 @@ namespace LibraryProject.Services
             _db.Books.Add(book);
             await _db.SaveChangesAsync();
         }
-        public async Task<List<Book>> GetAllBooksAsync(CancellationToken cancellationToken)
+        public async Task<List<BookDTOChild>> GetAllBooksAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await _db.Books.Include(b => b.Genre).Include(b => b.Category).Include(b => b.Series).Include(b => b.Author).Include(b => b.Reviews).ToListAsync();
+            return await _db.Books.Include(b => b.Genre).Include(b => b.Category).Include(b => b.Series).Include(b => b.Author).Include(b => b.Reviews).Select(a => _mapper.Map<BookDTOChild>(a)).ToListAsync();
         }
-        public async Task<Book> ReturnBookByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<BookDTOChild> ReturnBookByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -83,7 +86,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Книга не найдена");
             }
-            return book;
+            return _mapper.Map<BookDTOChild>(book);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -99,7 +102,7 @@ namespace LibraryProject.Services
             _db.Books.Remove(book1);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookWithoutExternal WithoutExternalBook)
+        public async Task UpdateByIDAsync(int? id, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesId, BookDTOParent WithoutExternalBook)
         {
             if (id == null || GenreId == null || CategoryId == null || AuthorId == null || SeriesId == null || WithoutExternalBook == null)
             {

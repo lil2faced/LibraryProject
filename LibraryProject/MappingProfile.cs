@@ -13,50 +13,50 @@ namespace LibraryProject
     {
         public MappingProfile()
         {
-            CreateMap<BookAuthor, AuthorModel>();
-            CreateMap<AuthorModel, BookAuthor>();
+            CreateMap<BookAuthor, AuthorDTO>();
+            CreateMap<AuthorDTO, BookAuthor>();
 
-            CreateMap<Category, CategoryModel>();
-            CreateMap<CategoryModel, Category>();
+            CreateMap<Category, CategoryDTO>();
+            CreateMap<CategoryDTO, Category>();
 
-            CreateMap<Genre, GenreModel>();
-            CreateMap<GenreModel, Genre>();
+            CreateMap<Genre, GenreDTO>();
+            CreateMap<GenreDTO, Genre>();
 
-            CreateMap<Series, SeriesModel>();
-            CreateMap<SeriesModel, Series>();
+            CreateMap<Series, SeriesDTO>();
+            CreateMap<SeriesDTO, Series>();
 
-            CreateMap<Book, BookModel>();
-            CreateMap<BookModel, BookModel>();
+            CreateMap<Book, BookDTOChild>();
+            CreateMap<BookDTOChild, BookDTOChild>();
 
-            CreateMap<BookWithoutExternal, BookModelWithoutExternal>();
-            CreateMap<BookModelWithoutExternal, BookWithoutExternal>();
+            CreateMap<BookWithoutExternal, BookDTOParent>();
+            CreateMap<BookDTOParent, BookWithoutExternal>();
 
-            CreateMap<BookLoan, LoanModel>();
-            CreateMap<LoanModel,  BookLoan>();
+            CreateMap<BookLoan, LoanDTOChild>();
+            CreateMap<LoanDTOChild,  BookLoan>();
 
-            CreateMap<BookLoanWithoutExternal, LoanModelWithoutExternal>();
-            CreateMap<LoanModelWithoutExternal, BookLoanWithoutExternal>();
+            CreateMap<BookLoanWithoutExternal, LoanDTOParent>();
+            CreateMap<LoanDTOParent, BookLoanWithoutExternal>();
 
-            CreateMap<BookPurchaseOrder, OrderModel>();
-            CreateMap<OrderModel, BookPurchaseOrder>();
+            CreateMap<BookPurchaseOrder, OrderDTOChild>();
+            CreateMap<OrderDTOChild, BookPurchaseOrder>();
 
-            CreateMap<BookPurchaseOrderWithoutExternal, OrderModelWithoutExternal>();
-            CreateMap<OrderModelWithoutExternal, BookPurchaseOrderWithoutExternal>();
+            CreateMap<BookPurchaseOrderWithoutExternal, OrderDTOParent>();
+            CreateMap<OrderDTOParent, BookPurchaseOrderWithoutExternal>();
 
-            CreateMap<Status, StatusModel>();
-            CreateMap<StatusModel, Status>();
+            CreateMap<Status, StatusDTO>();
+            CreateMap<StatusDTO, Status>();
 
-            CreateMap<Review, ReviewModel>();
-            CreateMap<ReviewModel, Review>();
+            CreateMap<Review, ReviewDTOChild>();
+            CreateMap<ReviewDTOChild, Review>();
 
-            CreateMap<ReviewWithoutExternal, ReviewModelWithoutExternal>();
-            CreateMap<ReviewModelWithoutExternal, ReviewWithoutExternal>();
+            CreateMap<ReviewWithoutExternal, ReviewDTOParent>();
+            CreateMap<ReviewDTOParent, ReviewWithoutExternal>();
 
-            CreateMap<User, UserModel>();
-            CreateMap<UserModel, User>();
+            CreateMap<User, UserDTOChild>();
+            CreateMap<UserDTOChild, User>();
 
-            CreateMap<UserWithoutExternal, UserModelWithoutExternal>();
-            CreateMap<UserModelWithoutExternal, UserWithoutExternal>();
+            CreateMap<UserWithoutExternal, UserDTOParent>();
+            CreateMap<UserDTOParent, UserWithoutExternal>();
         }
     }
 }

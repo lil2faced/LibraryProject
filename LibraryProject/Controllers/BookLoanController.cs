@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LibraryProject.Applications;
+using LibraryProject.ControllerModels;
 using LibraryProject.Entities.EntityBookLoan;
 using LibraryProject.Entities.Orders;
 using LibraryProject.Services;
@@ -20,7 +21,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<BookLoan>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<LoanDTOChild>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -34,7 +35,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookLoan>> Get(int? id, CancellationToken cancellationToken)
+        public async Task<ActionResult<LoanDTOChild>> Get(int? id, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -48,7 +49,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] BookLoanWithoutExternal bookLoanWithoutExternal, int? BookId, int? UserId, int? StatusId, CancellationToken cancellationToken)
+        public async Task<ActionResult> Add([FromBody] LoanDTOParent bookLoanWithoutExternal, int? BookId, int? UserId, int? StatusId, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -78,7 +79,7 @@ namespace LibraryProject.Controllers
 
         }
         [HttpPut("id")]
-        public async Task<ActionResult> Update(int? id, BookLoanWithoutExternal bookLoanWithoutExternal, int? statusId, int? UserId, int? BookId)
+        public async Task<ActionResult> Update(int? id, LoanDTOChild bookLoanWithoutExternal, int? statusId, int? UserId, int? BookId)
         {
             try
             {

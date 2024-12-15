@@ -22,7 +22,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<AuthorModel>>> GetAsync(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<AuthorDTO>>> GetAsync(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -36,7 +36,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<AuthorModel>> GetAsync(int? id, CancellationToken cancellationToken)
+        public async Task<ActionResult<AuthorDTO>> GetAsync(int? id, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -50,7 +50,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] AuthorModel? author, CancellationToken cancellationToken)
+        public async Task<ActionResult> PostAsync([FromBody] AuthorDTO? author, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -80,7 +80,7 @@ namespace LibraryProject.Controllers
             
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id, [FromBody]AuthorModel bookAuthor)
+        public async Task<IActionResult> Update(int? id, [FromBody]AuthorDTO bookAuthor)
         {
             try
             {

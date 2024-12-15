@@ -4,9 +4,10 @@ using System.Text.Json.Serialization;
 
 namespace LibraryProject.ControllerModels
 {
-    public class ReviewModel
+    public class ReviewDTOChild : ReviewDTOParent
     {
         public int BookId { get; set; }
-        public BookModel Book { get; set; }
+        [JsonIgnore]
+        public BookDTOChild Book { get; set; } = new BookDTOChild();
     }
 }

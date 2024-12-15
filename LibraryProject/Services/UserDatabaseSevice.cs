@@ -2,17 +2,21 @@
 using LibraryProject.Entities;
 using Microsoft.EntityFrameworkCore;
 using LibraryProject.Interfaces;
+using AutoMapper;
+using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Services
 {
     public class UserDatabaseSevice : IUserService
     {
         private readonly DatabaseContext databaseContext;
-        public UserDatabaseSevice(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public UserDatabaseSevice(DatabaseContext databaseContext, IMapper mapper)
         {
+            _mapper = mapper;
             this.databaseContext = databaseContext;
         }
-        public async Task<User> Get(int? id, CancellationToken cancellationToken)
+        public async Task<UserDTOChild> Get(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -27,18 +31,18 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Пользователь не найден");
             }
-            return user;
+            return _mapper.Map<UserDTOChild>(user);
         }
-        public async Task<List<User>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<UserDTOChild>> GetAll(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            var users = await databaseContext.Users.ToListAsync();
+            var users = await databaseContext.Users.Select(p => _mapper.Map<UserDTOChild>(p)).ToListAsync();
             return users;
         }
-        public async Task Add(UserWithoutExternal user, CancellationToken cancellationToken)
+        public async Task Add(UserDTOParent user, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -77,7 +81,7 @@ namespace LibraryProject.Services
             databaseContext.Users.Remove(user);
             await databaseContext.SaveChangesAsync();
         } 
-        public async Task Update(int? id, User user)
+        public async Task Update(int? id, UserDTOChild user)
         {
             if (user == null || id == null) throw new ArgumentNullException();
             var u = await databaseContext.Users.FindAsync(id);
@@ -85,9 +89,10 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Пользователь не найден");
             }
-            u.Surname = user.Surname;
-            u.Adress = user.Adress;
-            u.PhoneNumber = user.PhoneNumber;
+            var us = _mapper.Map<User>(user);
+            u.Surname = us.Surname;
+            u.Adress = us.Adress;
+            u.PhoneNumber = us.PhoneNumber;
             databaseContext.Users.Update(u);
             await databaseContext.SaveChangesAsync();
         }

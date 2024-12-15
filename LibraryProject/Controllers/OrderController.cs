@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibraryProject.Applications;
+using LibraryProject.ControllerModels;
 using LibraryProject.Entities;
-using LibraryProject.Entities.Orders;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<BookPurchaseOrder>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<OrderDTOChild>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookPurchaseOrder>> Get(int? id, CancellationToken token)
+        public async Task<ActionResult<OrderDTOChild>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -48,7 +48,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? BookId, int? UserId, int? StatusId, CancellationToken token)
+        public async Task<ActionResult> Add([FromBody] OrderDTOParent bookPurchaseOrderWithoutExternal, int? BookId, int? UserId, int? StatusId, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -77,7 +77,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("id")]
-        public async Task<ActionResult> Update(int id, BookPurchaseOrderWithoutExternal bookPurchaseOrderWithoutExternal, int? statusId, int? UserId, int? BookId)
+        public async Task<ActionResult> Update(int id, OrderDTOParent bookPurchaseOrderWithoutExternal, int? statusId, int? UserId, int? BookId)
         {
             try
             {

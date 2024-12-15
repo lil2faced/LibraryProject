@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using LibraryProject.Applications;
-using LibraryProject.Entities;
+using LibraryProject.ControllerModels;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<User>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<UserDTOChild>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<User?>> GetById(int? id, CancellationToken token)
+        public async Task<ActionResult<UserDTOChild>> GetById(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -63,7 +63,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] UserWithoutExternal user, CancellationToken token)
+        public async Task<ActionResult> Add([FromBody] UserDTOParent user, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -78,7 +78,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int? id, [FromBody] User user)
+        public async Task<ActionResult> Update(int? id, [FromBody] UserDTOChild user)
         {
             try
             {

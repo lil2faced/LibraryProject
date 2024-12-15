@@ -16,7 +16,7 @@ namespace LibraryProject.Services
             _db = databaseContext;
             _mapper = mapper;
         }
-        public async Task AddAsync(GenreModel genre, CancellationToken cancellationToken)
+        public async Task AddAsync(GenreDTO genre, CancellationToken cancellationToken)
         {
 
             if (cancellationToken.IsCancellationRequested)
@@ -35,15 +35,15 @@ namespace LibraryProject.Services
             _db.Genres.Add(_mapper.Map<Genre>(genre));
             await _db.SaveChangesAsync();
         }
-        public async Task<List<GenreModel>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<List<GenreDTO>> GetAllAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await _db.Genres.Select(a => _mapper.Map<GenreModel>(a)).ToListAsync();
+            return await _db.Genres.Select(a => _mapper.Map<GenreDTO>(a)).ToListAsync();
         }
-        public async Task<GenreModel> GetByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<GenreDTO> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -58,7 +58,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Жанр не найден");
             }
-            return _mapper.Map<GenreModel>(genre);
+            return _mapper.Map<GenreDTO>(genre);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -74,7 +74,7 @@ namespace LibraryProject.Services
             _db.Genres.Remove(genre);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, GenreModel gen)
+        public async Task UpdateByIDAsync(int? id, GenreDTO gen)
         {
             if (id == null || gen == null)
             {

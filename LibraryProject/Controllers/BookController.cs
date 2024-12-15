@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LibraryProject.Applications;
-
-using LibraryProject.Entities.EntityBook;
+using LibraryProject.ControllerModels;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +20,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Book>>> GetAsync(CancellationToken token)
+        public async Task<ActionResult<List<BookDTOChild>>> GetAsync(CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -36,7 +35,7 @@ namespace LibraryProject.Controllers
             
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetAsync(int? id, CancellationToken token)
+        public async Task<ActionResult<BookDTOChild>> GetAsync(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -50,7 +49,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] BookWithoutExternal bookNo, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID, CancellationToken token)
+        public async Task<ActionResult> PostAsync([FromBody] BookDTOParent bookNo, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -80,7 +79,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id, [FromBody] BookWithoutExternal book, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID)
+        public async Task<IActionResult> Update(int? id, [FromBody] BookDTOParent book, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID)
         {
             try
             {

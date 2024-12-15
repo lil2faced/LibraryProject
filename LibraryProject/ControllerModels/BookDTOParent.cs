@@ -1,14 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace LibraryProject.ControllerModels
 {
-    public class CategoryModel
+    public class BookDTOParent
     {
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
-        [JsonIgnore]
-        public List<BookModel> Books { get; set; } = new List<BookModel>();
+
+        public double Price { get; set; }
+
+        public DateOnly PublicationYear { get; set; }
+
+        [Required]
+        public string Publishing { get; set; }
     }
 }

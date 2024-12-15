@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using LibraryProject.Applications;
-using LibraryProject.Entities.Orders;
+using LibraryProject.ControllerModels;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Status>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<StatusDTO>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -34,7 +34,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Status>> Get(int? id, CancellationToken token)
+        public async Task<ActionResult<StatusDTO>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -49,7 +49,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody]Status status, CancellationToken token)
+        public async Task<ActionResult> Add([FromBody]StatusDTO status, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -78,7 +78,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int? id, [FromBody] Status status)
+        public async Task<ActionResult> Update(int? id, [FromBody] StatusDTO status)
         {
             try
             {

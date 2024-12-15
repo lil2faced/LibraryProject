@@ -1,13 +1,15 @@
-﻿using LibraryProject.Entities.EntityRewiev;
+﻿
+
+using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Interfaces
 {
     public interface IReviewService
     {
-        Task AddAsync(int? BookId, ReviewWithoutExternal reviewWithout, CancellationToken cancellationToken);
-        Task<List<Review>> GetAllReviews(CancellationToken cancellationToken);
-        Task<Review?> GetReviewById(int? id, CancellationToken cancellationToken);
+        Task AddAsync(int? BookId, ReviewDTOParent reviewWithout, CancellationToken cancellationToken);
+        Task<List<ReviewDTOChild>> GetAllReviews(CancellationToken cancellationToken);
+        Task<ReviewDTOChild> GetReviewById(int? id, CancellationToken cancellationToken);
         Task DeleteReviewById(int? id);
-        Task UpdateReview(int? id, ReviewWithoutExternal rev);
+        Task UpdateReview(int? id, ReviewDTOParent rev);
     }
 }

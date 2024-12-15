@@ -16,7 +16,7 @@ namespace LibraryProject.Services
             _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddAuthorAsync(AuthorModel? author, CancellationToken cancellationToken)
+        public async Task AddAuthorAsync(AuthorDTO? author, CancellationToken cancellationToken)
         {
             var mappedAuthor = _mapper.Map<BookAuthor>(author);
             if (cancellationToken.IsCancellationRequested)
@@ -35,17 +35,17 @@ namespace LibraryProject.Services
             _db.BookAuthors.Add(mappedAuthor);            
             await _db.SaveChangesAsync();
         }
-        public async Task<List<AuthorModel>> GetAllAuthorsAsync(CancellationToken cancellationToken)
+        public async Task<List<AuthorDTO>> GetAllAuthorsAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
             return await _db.BookAuthors
-                .Select(a => _mapper.Map<AuthorModel>(a))
+                .Select(a => _mapper.Map<AuthorDTO>(a))
                 .ToListAsync();
         }
-        public async Task<AuthorModel> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<AuthorDTO> GetAuthorByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -61,7 +61,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Автор не найден");
             }
-            return _mapper.Map<AuthorModel>(author);
+            return _mapper.Map<AuthorDTO>(author);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -77,7 +77,7 @@ namespace LibraryProject.Services
             _db.BookAuthors.Remove(author);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, AuthorModel aut)
+        public async Task UpdateByIDAsync(int? id, AuthorDTO aut)
         {
             _mapper.Map<BookAuthor>(aut);
             if (id == null || aut == null)

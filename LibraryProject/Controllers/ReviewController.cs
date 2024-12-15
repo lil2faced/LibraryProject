@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using LibraryProject.Applications;
-using LibraryProject.Entities.EntityRewiev;
+using LibraryProject.ControllerModels;
 using LibraryProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Review>>> GetByBookId(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<ReviewDTOChild>>> GetByBookId(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -33,7 +33,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Review>> Get(int? id, CancellationToken token)
+        public async Task<ActionResult<ReviewDTOChild>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -48,7 +48,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> Add(int? bookId, [FromBody]ReviewWithoutExternal reviewWithoutExternal, CancellationToken token)
+        public async Task<ActionResult> Add(int? bookId, [FromBody]ReviewDTOParent reviewWithoutExternal, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -79,7 +79,7 @@ namespace LibraryProject.Controllers
             
         }
         [HttpPut]
-        public async Task<ActionResult> Update(int? id, [FromBody] ReviewWithoutExternal reviewWithoutExternal)
+        public async Task<ActionResult> Update(int? id, [FromBody] ReviewDTOParent reviewWithoutExternal)
         {
             try
             {

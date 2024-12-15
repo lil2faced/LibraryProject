@@ -1,13 +1,13 @@
-﻿using LibraryProject.Entities.Orders;
+﻿using LibraryProject.ControllerModels;
 
 namespace LibraryProject.Interfaces
 {
     public interface IStatusService
     {
-        Task Add(Status status, CancellationToken cancellationToken);
-        Task<List<Status>> GetAll(CancellationToken cancellationToken);
-        Task<Status> GetById(int? id, CancellationToken cancellationToken);
-        Task Update(int? id, Status status);
+        Task Add(StatusDTO status, CancellationToken cancellationToken);
+        Task<List<StatusDTO>> GetAll(CancellationToken cancellationToken);
+        Task<StatusDTO> GetById(int? id, CancellationToken cancellationToken);
+        Task Update(int? id, StatusDTO status);
         Task Delete(int? id);
     }
 }

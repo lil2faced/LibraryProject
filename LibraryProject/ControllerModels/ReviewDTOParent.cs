@@ -2,10 +2,12 @@
 
 namespace LibraryProject.ControllerModels
 {
-    public class ReviewModelWithoutExternal
+    public class ReviewDTOParent
     {
         public int Id { get; set; }
-        public string BodyReview { get; set; }
+        [Required]
+        public string BodyReview { get; set; } = string.Empty;
+        [Required]
         public DateOnly DateReview { get; set; }
     }
 }

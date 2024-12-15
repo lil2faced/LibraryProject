@@ -2,10 +2,12 @@
 
 namespace LibraryProject.ControllerModels
 {
-    public class LoanModelWithoutExternal
+    public class LoanDTOParent
     {
         public int Id { get; set; }
+        [Required]
         public DateOnly DateLoan { get; set; }
+        [Required]
         public DateOnly DateReturn { get; set; }
     }
 }

@@ -2,17 +2,21 @@
 using LibraryProject.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using LibraryProject.Interfaces;
+using LibraryProject.ControllerModels;
+using AutoMapper;
 
 namespace LibraryProject.Services
 {
     public class BookOrderService : IOrderService
     {
         private readonly DatabaseContext databaseContext;
-        public BookOrderService(DatabaseContext databaseContext)
+        private readonly IMapper _mapper;
+        public BookOrderService(DatabaseContext databaseContext, IMapper mapper)
         {
             this.databaseContext = databaseContext;
+            _mapper = mapper;
         }
-        public async Task Add(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, CancellationToken cancellationToken)
+        public async Task Add(OrderDTOParent bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -43,7 +47,7 @@ namespace LibraryProject.Services
             await databaseContext.Orders.AddAsync(order);
             await databaseContext.SaveChangesAsync();
         }
-        public async Task<BookPurchaseOrder> GetById(int? id, CancellationToken cancellationToken)
+        public async Task<OrderDTOChild> GetById(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -62,9 +66,9 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Заявка не найдена");
             }
-            return temp;
+            return _mapper.Map<OrderDTOChild>(temp);
         }
-        public async Task<List<BookPurchaseOrder>> Get(CancellationToken cancellationToken)
+        public async Task<List<OrderDTOChild>> Get(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -73,6 +77,7 @@ namespace LibraryProject.Services
             return await databaseContext.Orders
                 .Include(b => b.Status)
                 .Include(b => b.User)
+                .Select(p => _mapper.Map<OrderDTOChild>(p))
                 .ToListAsync();
         }
         public async Task Delete(int? id)
@@ -89,7 +94,7 @@ namespace LibraryProject.Services
             databaseContext.Orders.Remove(order);
             await databaseContext.SaveChangesAsync();
         }
-        public async Task Update(BookPurchaseOrderWithoutExternal bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id)
+        public async Task Update(OrderDTOParent bookPurchaseOrder, int? StatusId, int? UserId, int? BookId, int? id)
         {
             if (StatusId == null || bookPurchaseOrder == null || UserId == null || BookId == null || id == null)
             {

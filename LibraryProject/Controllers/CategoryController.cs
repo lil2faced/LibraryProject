@@ -21,7 +21,7 @@ namespace LibraryProject.Controllers
             _cts = cts;
         }
         [HttpGet]
-        public async Task<ActionResult<List<CategoryModel>>> Get(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<CategoryDTO>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
             try
@@ -35,7 +35,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryModel>> Get(int? id, CancellationToken token)
+        public async Task<ActionResult<CategoryDTO>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
             try
@@ -49,7 +49,7 @@ namespace LibraryProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] CategoryModel category, CancellationToken token)
+        public async Task<ActionResult> PostAsync([FromBody] CategoryDTO category, CancellationToken token)
         {
             token = _cts.Token;
             
@@ -80,7 +80,7 @@ namespace LibraryProject.Controllers
 
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int? id, [FromBody] CategoryModel category)
+        public async Task<IActionResult> Update(int? id, [FromBody] CategoryDTO category)
         {
             try
             {

@@ -5,10 +5,10 @@ namespace LibraryProject.Interfaces
 {
     public interface IGenreService
     {
-        Task AddAsync(GenreModel genre, CancellationToken cancellationToken);
-        Task<List<GenreModel>> GetAllAsync(CancellationToken cancellationToken);
-        Task<GenreModel> GetByIdAsync(int? id, CancellationToken cancellationToken);
+        Task AddAsync(GenreDTO genre, CancellationToken cancellationToken);
+        Task<List<GenreDTO>> GetAllAsync(CancellationToken cancellationToken);
+        Task<GenreDTO> GetByIdAsync(int? id, CancellationToken cancellationToken);
         Task DeleteByIdAsync(int? id);
-        Task UpdateByIDAsync(int? id, GenreModel gen);
+        Task UpdateByIDAsync(int? id, GenreDTO gen);
     }
 }

@@ -16,7 +16,7 @@ namespace LibraryProject.Services
             _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddAsync(CategoryModel category, CancellationToken cancellationToken)
+        public async Task AddAsync(CategoryDTO category, CancellationToken cancellationToken)
         {
             if (category == null)
             {
@@ -35,17 +35,17 @@ namespace LibraryProject.Services
             _db.Categories.Add(res);
             await _db.SaveChangesAsync();
         }
-        public async Task<List<CategoryModel>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<List<CategoryDTO>> GetAllAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
             return await _db.Categories
-                .Select(a => _mapper.Map<CategoryModel>(a))
+                .Select(a => _mapper.Map<CategoryDTO>(a))
                 .ToListAsync();
         }
-        public async Task<CategoryModel> GetByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<CategoryDTO> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -60,7 +60,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Категория не найдена");
             }
-            return _mapper.Map<CategoryModel>(category);
+            return _mapper.Map<CategoryDTO>(category);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -76,7 +76,7 @@ namespace LibraryProject.Services
             _db.Categories.Remove(category);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, CategoryModel cat)
+        public async Task UpdateByIDAsync(int? id, CategoryDTO cat)
         {
             if (id == null || cat == null)
             {

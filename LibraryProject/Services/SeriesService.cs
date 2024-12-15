@@ -16,7 +16,7 @@ namespace LibraryProject.Services
             _mapper = mapper;
             _db = databaseContext;
         }
-        public async Task AddAsync(SeriesModel series, CancellationToken cancellationToken)
+        public async Task AddAsync(SeriesDTO series, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -34,15 +34,15 @@ namespace LibraryProject.Services
             _db.BookSeries.Add(_mapper.Map<Series>(series));
             await _db.SaveChangesAsync();
         }
-        public async Task<List<SeriesModel>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<List<SeriesDTO>> GetAllAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException("Операция отменена");
             }
-            return await _db.BookSeries.Select(a => _mapper.Map<SeriesModel>(a)).ToListAsync();
+            return await _db.BookSeries.Select(a => _mapper.Map<SeriesDTO>(a)).ToListAsync();
         }
-        public async Task<SeriesModel> GetByIdAsync(int? id, CancellationToken cancellationToken)
+        public async Task<SeriesDTO> GetByIdAsync(int? id, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -57,7 +57,7 @@ namespace LibraryProject.Services
             {
                 throw new Exception("Серия не найдена");
             }
-            return _mapper.Map<SeriesModel>(series);
+            return _mapper.Map<SeriesDTO>(series);
         }
         public async Task DeleteByIdAsync(int? id)
         {
@@ -70,7 +70,7 @@ namespace LibraryProject.Services
             _db.BookSeries.Remove(series);
             await _db.SaveChangesAsync();
         }
-        public async Task UpdateByIDAsync(int? id, SeriesModel ser)
+        public async Task UpdateByIDAsync(int? id, SeriesDTO ser)
         {
             if (id == null || ser == null) throw new ArgumentNullException();
             var series = await _db.BookSeries.FindAsync(id);
