@@ -31,7 +31,7 @@ namespace LibraryProject.Services
             if (Author != null)
             {
                 throw new Exception("Автор не найден");
-            }
+            } 
             _db.BookAuthors.Add(mappedAuthor);            
             await _db.SaveChangesAsync();
         }

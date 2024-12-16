@@ -2,6 +2,7 @@
 using LibraryProject.Applications;
 using LibraryProject.Entities.BookProps;
 using LibraryProject.Interfaces;
+using LibraryProject.Middlewares;
 using LibraryProject.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ namespace LibraryProject
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<DatabaseContext>();
-            
+
 
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddTransient<AuthorService>();
@@ -45,7 +46,7 @@ namespace LibraryProject
 
             builder.Services.AddAutoMapper(typeof(Program));
             var app = builder.Build();
-
+            app.UseMiddleware<ExceptionMiddleware>();
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

@@ -24,74 +24,32 @@ namespace LibraryProject.Controllers
         public async Task<ActionResult<List<CategoryDTO>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
-            try
-            {
                 return Ok(await categoryService.GetAllAsync(cancellationToken));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDTO>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
-            try
-            {
                 return Ok(await categoryService.GetByIdAsync(id, token));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] CategoryDTO category, CancellationToken token)
         {
             token = _cts.Token;
-            
-            try
-            {
                 await categoryService.AddAsync(category, token);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            try
-            {
                 await categoryService.DeleteByIdAsync(id);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
-
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody] CategoryDTO category)
         {
-            try
-            {
                 await categoryService.UpdateByIDAsync(id, category);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
 
     }

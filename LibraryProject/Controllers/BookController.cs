@@ -23,75 +23,33 @@ namespace LibraryProject.Controllers
         public async Task<ActionResult<List<BookDTOChild>>> GetAsync(CancellationToken token)
         {
             token = _cts.Token;
-            try
-            {
                 return Ok(await bookService.GetAllBooksAsync(token));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
             
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDTOChild>> GetAsync(int? id, CancellationToken token)
         {
             token = _cts.Token;
-            try
-            {
                 return Ok(await bookService.ReturnBookByIdAsync(id, token));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] BookDTOParent bookNo, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID, CancellationToken token)
         {
             token = _cts.Token;
-            try
-            {
                 await bookService.AddBookAsync(GenreId, CategoryId, AuthorId, SeriesID, bookNo, token);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
-            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            try
-            {
                 await bookService.DeleteByIdAsync(id);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody] BookDTOParent book, int? GenreId, int? CategoryId, int? AuthorId, int? SeriesID)
         {
-            try
-            {
                 await bookService.UpdateByIDAsync(id, GenreId, CategoryId, AuthorId, SeriesID, book);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
-            
         }
     }
 }

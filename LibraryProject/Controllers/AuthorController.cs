@@ -25,73 +25,32 @@ namespace LibraryProject.Controllers
         public async Task<ActionResult<List<AuthorDTO>>> GetAsync(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
-            try
-            {
-                return Ok(await service.GetAllAuthorsAsync(cancellationToken));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
+            return Ok(await service.GetAllAuthorsAsync(cancellationToken));
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<AuthorDTO>> GetAsync(int? id, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
-            try
-            {
-                return Ok(await service.GetAuthorByIdAsync(id, cancellationToken));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message); 
-                throw;
-            }
+            return Ok(await service.GetAuthorByIdAsync(id, cancellationToken));
         }
         [HttpPost]
         public async Task<ActionResult> PostAsync([FromBody] AuthorDTO? author, CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
-            try
-            {
                 await service.AddAuthorAsync(author, cancellationToken);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
-            try
-            {
                 await service.DeleteByIdAsync(id);
                 return Ok();
-            } 
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
-            
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int? id, [FromBody]AuthorDTO bookAuthor)
         {
-            try
-            {
                 await service.UpdateByIDAsync(id, bookAuthor);
                 return Ok();
-            } 
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
     }
 }

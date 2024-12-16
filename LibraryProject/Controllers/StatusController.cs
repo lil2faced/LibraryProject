@@ -23,73 +23,33 @@ namespace LibraryProject.Controllers
         public async Task<ActionResult<List<StatusDTO>>> Get(CancellationToken cancellationToken)
         {
             cancellationToken = _cts.Token;
-            try
-            {
                 return Ok(await statusService.GetAll(cancellationToken));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<StatusDTO>> Get(int? id, CancellationToken token)
         {
             token = _cts.Token;
-            try
-            {
                 await statusService.GetById(id, token);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpPost]
         public async Task<ActionResult> Add([FromBody]StatusDTO status, CancellationToken token)
         {
             token = _cts.Token;
-            try
-            {
                 await statusService.Add(status, token);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int? id)
         {
-            try
-            {
                 await statusService.Delete(id);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int? id, [FromBody] StatusDTO status)
         {
-            try
-            {
                 await statusService.Update(id, status);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-                throw;
-            }
         }
     }
 }
