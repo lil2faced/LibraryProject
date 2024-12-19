@@ -3,6 +3,7 @@ using LibraryProject.Applications;
 using LibraryProject.ControllerModels;
 using LibraryProject.Entities.BookProps;
 using LibraryProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace LibraryProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SeriesController : ControllerBase
     {
         private readonly SeriesService seriesService;

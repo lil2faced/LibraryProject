@@ -6,6 +6,7 @@ using LibraryProject.Entities.EntityBook;
 using LibraryProject.Entities.EntityBookLoan;
 using LibraryProject.Entities.EntityRewiev;
 using LibraryProject.Entities.Orders;
+using LibraryProject.Entities.UserApi;
 
 namespace LibraryProject
 {
@@ -57,6 +58,9 @@ namespace LibraryProject
 
             CreateMap<UserWithoutExternal, UserDTOParent>();
             CreateMap<UserDTOParent, UserWithoutExternal>();
+
+            CreateMap<UserApi, UserApiDTO>();
+            CreateMap<UserApiDTO, UserApi>();
         }
     }
 }

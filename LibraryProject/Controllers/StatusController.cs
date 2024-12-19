@@ -2,6 +2,7 @@
 using LibraryProject.Applications;
 using LibraryProject.ControllerModels;
 using LibraryProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography.X509Certificates;
@@ -10,6 +11,7 @@ namespace LibraryProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StatusController : ControllerBase
     {
         private readonly StatusService statusService;

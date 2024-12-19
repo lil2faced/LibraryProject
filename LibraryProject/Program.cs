@@ -4,8 +4,15 @@ using LibraryProject.Entities.BookProps;
 using LibraryProject.Interfaces;
 using LibraryProject.Middlewares;
 using LibraryProject.Services;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace LibraryProject
 {
@@ -14,6 +21,29 @@ namespace LibraryProject
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AuthOptions.KEY))
+                    };
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["auth-token"];
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
+            builder.Services.AddAuthorization();
+
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -41,11 +71,16 @@ namespace LibraryProject
             builder.Services.AddTransient<StatusService>();
             builder.Services.AddScoped<IUserService, UserDatabaseSevice>();
             builder.Services.AddTransient<UserDatabaseSevice>();
+            builder.Services.AddScoped<IUserApiService, UserApiService>();
+            builder.Services.AddTransient<UserApiService>();
+            builder.Services.AddTransient<JwtProvider>();
 
             builder.Services.AddTransient<CancellationTokenSource>();
 
             builder.Services.AddAutoMapper(typeof(Program));
             var app = builder.Build();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             if (app.Environment.IsDevelopment())
             {
@@ -54,8 +89,6 @@ namespace LibraryProject
             }
 
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
 
 
             app.MapControllers();

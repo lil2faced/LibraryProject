@@ -4,6 +4,7 @@ using LibraryProject.ControllerModels;
 using LibraryProject.Entities.BookProps;
 using LibraryProject.Entities.EntityBook;
 using LibraryProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
@@ -12,6 +13,7 @@ namespace LibraryProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthorController : ControllerBase
     {
         private readonly AuthorService service;

@@ -2,6 +2,7 @@
 using LibraryProject.Applications;
 using LibraryProject.ControllerModels;
 using LibraryProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
@@ -10,6 +11,7 @@ namespace LibraryProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly UserDatabaseSevice userService;

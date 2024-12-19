@@ -26,6 +26,7 @@ namespace LibraryProject.Applications.EntityConfigurations
                 .HasOne(b => b.Author)
                 .WithMany(c => c.Books)
                 .HasForeignKey(b => b.AuthorId);
+            
         }
     }
 }

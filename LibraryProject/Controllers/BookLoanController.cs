@@ -4,6 +4,7 @@ using LibraryProject.ControllerModels;
 using LibraryProject.Entities.EntityBookLoan;
 using LibraryProject.Entities.Orders;
 using LibraryProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace LibraryProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BookLoanController : ControllerBase
     {
         private readonly BookLoanService bookService;

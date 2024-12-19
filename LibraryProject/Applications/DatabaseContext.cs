@@ -6,6 +6,7 @@ using LibraryProject.Entities.EntityBook;
 using LibraryProject.Entities.EntityBookLoan;
 using LibraryProject.Entities.EntityRewiev;
 using LibraryProject.Entities.Orders;
+using LibraryProject.Entities.UserApi;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;
 
@@ -28,6 +29,7 @@ namespace LibraryProject.Applications
         public DbSet<Status> Statuses { get; set; }
         public DbSet<BookPurchaseOrder> Orders { get; set; }
         public DbSet<BookLoan> BookLoans { get; set; }
+        public DbSet<UserApi> ApiUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookEntityTypeConfiguration).Assembly);
